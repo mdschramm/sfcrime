@@ -41,8 +41,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workSelected = false;
 	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot");
 	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot");
-	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0.4).attr("class", "base-dot");
-	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0.4).attr("class", "base-dot");
+	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0.25).attr("class", "base-dot");
+	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0.25).attr("class", "base-dot");
 	var homeAreaCrimes = [];
 	var workAreaCrimes = [];
 	var homeR = 0;
@@ -71,7 +71,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		if(!homeSelected) {
 			homeLoc = projection.invert([x,y]);
 			homeDot.attr("cx", x).attr("cy", y).attr("r", 5);
-			homeArea.attr("cx", x).attr("cy", y).style("opacity",0.4);
+			homeArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
 			homeSelected = true;
 			if(homeSelected && workSelected) {
 				homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
@@ -82,7 +82,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		} else if(!workSelected) {
 			workLoc = projection.invert([x,y]);
 			workDot.attr("cx", x).attr("cy", y).attr("r",5);
-			workArea.attr("cx", x).attr("cy", y).style("opacity",0.4);
+			workArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
 			workSelected = true;
 			if(homeSelected && workSelected) {
 				workAreaCrimes = pointsWithinRadius(data, workLoc, workR);
@@ -127,11 +127,11 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var changeRadius = function(target, shown, val) {
 		target.attr("r", val);
 		if(shown) {
-			target.style("opacity",0.4);
+			target.style("opacity",0.25);
 		}
 	};
 	var homeRadius = function(evt, value) {
-		value = 10+ value*7;
+		value = 20 + value*7;
 		homeR = value;
 		changeRadius(homeArea, homeSelected, value);
 		if(homeSelected && workSelected) {
@@ -141,7 +141,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	};
 	var workRadius = function(evt, value) {
-		value = 10 + value*7;
+		value = 20 + value*7;
 		workR = value;
 		changeRadius(workArea, workSelected, value);
 		if(homeSelected && workSelected) {
@@ -151,11 +151,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	};
 
-
 	d3.select('#homeSlider').call(d3.slider().on("slide", homeRadius));
 	d3.select('#workSlider').call(d3.slider().on("slide", workRadius));
-
-
 
 	// Hover functionality for Description
 	var $des = $("#crime-description");
