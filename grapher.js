@@ -19,8 +19,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 	typesArr.sort(); //alphabetically
 
-	var visiblePoints = data;
-
 	// Set up size
 	var width = 750,
 		height = width;
@@ -51,6 +49,12 @@ d3.json("scpd_incidents.json", function(error, json) {
 	          .attr("xlink:href", "sf-map.svg")
 	          // .attr("transform", "translate(-100,-100)");
 
+
+	//Filtered arrays
+	var visiblePoints = data;
+	var radialFiltered = data;
+	var timeFiltered = data;
+	var typeFiltered = data;
 	//Variables for home and work locations
 	var homeLoc = [0,0];
 	var workLoc = [0,0];
@@ -65,11 +69,15 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var homeR = 0;
 	var workR = 0;
 
+	//Variables for time filtering
+	var startTime = 0
+	var endTime = 1439
 
 	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
 		homeDot.attr("r", 0);
 		homeArea.style("opacity", 0);
-		visiblePoints = data;
+		radialFiltered = data;
+		visiblePoints = timeFiltered;//Add in filter for type
 		graphPoints(visiblePoints);
 		homeSelected = false;
 	});
@@ -77,7 +85,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
 		workDot.attr("r", 0);
 		workArea.style("opacity", 0);
-		visiblePoints = data;
+		radialFiltered = data;
+		visiblePoints = timeFiltered;//Add filter for type
 		graphPoints(visiblePoints);
 		workSelected = false;
 	});
@@ -91,9 +100,11 @@ d3.json("scpd_incidents.json", function(error, json) {
 			homeArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
 			homeSelected = true;
 			if(homeSelected && workSelected) {
-				homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
+				var filtered = timeFiltered;//Add in filter for type
+				homeAreaCrimes = pointsWithinRadius(filtered, homeLoc, homeR);
 				visiblePoints = pointsWithinRadius(homeAreaCrimes, workLoc, workR);
 				graphPoints(visiblePoints);
+				addDescrHovers();
 			}
 			
 		} else if(!workSelected) {
@@ -102,9 +113,11 @@ d3.json("scpd_incidents.json", function(error, json) {
 			workArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
 			workSelected = true;
 			if(homeSelected && workSelected) {
-				workAreaCrimes = pointsWithinRadius(data, workLoc, workR);
+				var filtered = timeFiltered;//Add in filter for type
+				workAreaCrimes = pointsWithinRadius(filtered, workLoc, workR);
 				visiblePoints = pointsWithinRadius(workAreaCrimes, homeLoc, homeR);
 				graphPoints(visiblePoints);
+				addDescrHovers();
 			}
 		}
 	});
@@ -152,9 +165,11 @@ d3.json("scpd_incidents.json", function(error, json) {
 		homeR = value;
 		changeRadius(homeArea, homeSelected, value);
 		if(homeSelected && workSelected) {
-			homeAreaCrimes = pointsWithinRadius(data, homeLoc, value);
+			var filtered = timeFiltered;//add filter for type
+			homeAreaCrimes = pointsWithinRadius(filtered, homeLoc, value);
 			visiblePoints = pointsWithinRadius(homeAreaCrimes, workLoc, workR);
 			graphPoints(visiblePoints);
+			addDescrHovers();
 		}
 	};
 	var workRadius = function(evt, value) {
@@ -162,9 +177,11 @@ d3.json("scpd_incidents.json", function(error, json) {
 		workR = value;
 		changeRadius(workArea, workSelected, value);
 		if(homeSelected && workSelected) {
+			var filtered = timeFiltered;//add filter for type
 			workAreaCrimes = pointsWithinRadius(data, workLoc, value);
 			visiblePoints = pointsWithinRadius(workAreaCrimes, homeLoc, homeR);
 			graphPoints(visiblePoints);
+			addDescrHovers();
 		}
 	};
 
@@ -172,25 +189,28 @@ d3.json("scpd_incidents.json", function(error, json) {
 	d3.select('#workSlider').call(d3.slider().on("slide", workRadius));
 
 	// Hover functionality for Description
-	var $des = $("#crime-description");
-	$des.text("Please hover");
-	$( "circle" ).hover(
-		function() {
-			var enter = $(this);
-			if(enter.hasClass("base-dot")) return;
-			var des = enter.attr('description');
-			enter.css("fill", "red");
-			enter.attr("r", 4);
-			$des.text(des);
-		}, function() {
-			var exit = $(this);
-			if(exit.hasClass("base-dot")) return;
-			exit.css("fill", "blue");
-			exit.attr("r", 2);
-			$des.text("Please hover");
-		}
-	);
-
+	function addDescrHovers() {
+		var $des = $("#crime-description");
+		$des.text("Please hover");
+		$( "circle" ).hover(
+			function() {
+				var enter = $(this);
+				if(enter.hasClass("base-dot")) return;
+				var des = enter.attr('description');
+				enter.css("fill", "red");
+				enter.attr("r", 4);
+				$des.text(des);
+			}, function() {
+				var exit = $(this);
+				if(exit.hasClass("base-dot")) return;
+				exit.css("fill", "blue");
+				exit.attr("r", 2);
+				$des.text("Please hover");
+			}
+		);
+	}
+	
+	addDescrHovers();
 	
 
 	// Legend for ordinal crime types
@@ -202,7 +222,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 	// var svg = d3.select("svg");
 	// var svg = d3.select("#legend");
 	// Add an svg element to the DOM
-	console.log($("#legend"));
 	var svg2 = d3.select("#legend").append("svg")
 		.attr("width", width)
 		.attr("height", height+100);
@@ -224,22 +243,48 @@ d3.json("scpd_incidents.json", function(error, json) {
 		.call(legendOrdinal);
 
 // ====== Circular brush shizz ===========
-	var brush = d3.svg.circularbrush()
-      .range([1,366])
-      .innerRadius(50)
-      .outerRadius(80)
+	var piebrush = d3.svg.circularbrush()
+      .range([0,23])
+      .innerRadius(30)
+      .outerRadius(45)
       .handleSize(0.1)
-      .extent([30,120])
-      .on("brush", brushed);
+      .extent([0,23]) //initial range
+  	.on("brush", pieBrush);
 
-    function brushed() {
-    	console.log("yreao");
-    }
+    var hours = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+
+  	var pie = d3.layout.pie().value(function() {return 1}).sort(d3.ascending);
+  	var pieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
+  	svg2.append("g")
+	  .attr("transform", "translate(150,400)")
+  	.selectAll("path")
+	  .data(pie(hours))
+	  .enter()
+	  .append("path")
+	  .attr("class", "piehours")
+	  .attr("d", pieArc);
     
+    function pieBrush() {
+    d3.selectAll("path.piehours")
+    .style("fill", piebrushIntersect)
+  }
+
+  function piebrushIntersect(d,i) {
+    var _e = piebrush.extent();
+    if (_e[0] < _e[1]) {
+      var intersect = (d.data >= _e[0] && d.data <= _e[1]);
+    }
+    else {
+      var intersect = (d.data >= _e[0]) || (d.data <= _e[1]);      
+    }
+
+    return intersect ? "rgb(241,90,64)" : "rgb(231,231,231)"
+  }
+
     svg2.append("g")
 	  .attr("class", "brush")
 	  .attr("transform", "translate(150,400)")
-	  .call(brush);
+	  .call(piebrush);
 
 	// END
 });
