@@ -95,6 +95,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	function typeFilter(input) {
+		// ============ IMPLEMENT ===============
 		return input;
 	}
 	
