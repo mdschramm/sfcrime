@@ -115,7 +115,11 @@ d3.json("scpd_incidents.json", function(error, json) {
 		timeFiltered = newSet;
 		radAndTimeFiltered = timeFilter(radialFiltered);
 		timeAndTypeFiltered = timeFilter(typeFiltered);
-		visiblePoints = timeFilter(radAndTypeFiltered);
+		if(homeSelected && workSelected) {
+			visiblePoints = timeFilter(radAndTypeFiltered);
+		} else {
+			visiblePoints = timeFilter(typeFiltered);
+		}
 		graphPoints(visiblePoints);
 	}
 
@@ -123,7 +127,11 @@ d3.json("scpd_incidents.json", function(error, json) {
 		typeFiltered = newSet;
 		radAndTypeFiltered = typeFilter(radialFiltered);
 		timeAndTypeFiltered = typeFilter(timeFiltered);
-		visiblePoints = typeFilter(radAndTimeFiltered);
+		if(homeSelected && workSelected) {
+			visiblePoints = typeFilter(radAndTimeFiltered);
+		} else {
+			visiblePoints = typeFilter(timeFiltered);
+		}
 		graphPoints(visiblePoints);
 	}
 
