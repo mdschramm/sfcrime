@@ -167,11 +167,29 @@ d3.json("scpd_incidents.json", function(error, json) {
 			$des.text(des);
 		}, function() {
 			var exit = $(this);
-			if(exit.hasClass("base-dot")) return; 
+			if(exit.hasClass("base-dot")) return;
 			exit.css("fill", "blue");
 			exit.attr("r", 2);
 			$des.text("Please hover");
 		}
 	);
+
+	var brush = d3.svg.circularbrush()
+      .range([1,366])
+      .innerRadius(10)
+      .outerRadius(218)
+      .handleSize(0.1)
+      .extent([30,120])
+      .on("brush", brushed);
+
+    function brushed() {
+    	console.log("yreao");
+    }
+    
+    svg.append("g")
+	  .attr("class", "brush")
+	  .attr("transform", "translate(576,250)")
+	  .call(brush);
+
 
 });
