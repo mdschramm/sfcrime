@@ -27,10 +27,41 @@ d3.json("scpd_incidents.json", function(error, json) {
 	          .attr("height", height)
 	          .attr("xlink:href", "sf-map.svg");
 
+	var homeLoc = [0,0];
+	var workLoc = [0,0];
+	var homeSelected = false;
+	var workSelected = false;
+
+	document.querySelector('svg').addEventListener('click', function(e) {
+
+		var x = e.offsetX;
+		var y = e.offsetY;
+		if(!homeSelected) {
+		homeLoc = projection.invert([x,y]);
+		
+		} else if(!workSelected) {
+
+		}
+		svg.append("circle")
+			.attr("cx", x)
+			.attr("cy", y)
+			.attr("r", 2)
+            .style("fill", "red");
+	});
+
 	function graphPoints(pointArray) {
-		console.log(pointArray);
+		var circles = svg.selectAll("circle")
+                          .data(pointArray)
+                          .enter()
+                          .append("circle");
+
+		var circleAttributes = circles
+                       .attr("cx", function (d) { return projection(d.Location)[0]; })
+                       .attr("cy", function (d) { return projection(d.Location)[1]; })
+                       .attr("r", 2)
+                       .style("fill", "blue");
 	}
 
-	graphPoints(data);
+	graphPoints(data.data);
 
 });
