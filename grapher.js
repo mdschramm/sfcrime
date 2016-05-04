@@ -66,7 +66,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	// filter function, so instead we will just keep subsets of pointArray in memory
 
 	function graphPoints(pointArray) {
-		var circles = svg.selectAll("circle").filter(function() {return !(this.className.baseVal === "base-dot");}).remove();
+		var circles = svg.selectAll("circle").filter(function() {return this.className.baseVal !== "base-dot";}).remove();
 
 		circles = svg.selectAll("circle")
                           .data(pointArray)
