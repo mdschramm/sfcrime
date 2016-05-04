@@ -64,4 +64,13 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 	graphPoints(data.data);
 
+
+	// Slider Logic for Radius of HOME
+	var homeRadius = function(evt, value) {
+		// console.log(value);
+		// value returns 0 - 100 (real nnumbers, not whole)
+	}
+
+	d3.select('#slider').call(d3.slider().on("slide", homeRadius));
+
 });
