@@ -84,6 +84,8 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .attr("cy", function (d) { return projection(d.Location)[1]; })
                        .attr("r", 2)
                        .attr("id", function(d) { return d['IncidentNumber']; })
+                       .attr("description", function(d) { return d['Description']; })
+                       .attr("type", function(d) { return d['Category']; })
                        .style("fill", "blue");
 	}
 
@@ -97,5 +99,25 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	d3.select('#slider').call(d3.slider().on("slide", homeRadius));
+
+
+	// Hover functionality for Description
+	var $des = $("#crime-description");
+	$des.text("Please hover");
+	$( "circle" ).hover(
+		function() {
+			var enter = $(this);
+			var des = enter.attr('description');
+			console.log(des);
+			enter.css("fill", "red");
+			enter.attr("r", 4);
+			$des.text(des);
+		}, function() {
+			var exit = $(this);
+			exit.css("fill", "blue");
+			exit.attr("r", 2);
+			$des.text("Please hover");
+		}
+	);
 
 });
