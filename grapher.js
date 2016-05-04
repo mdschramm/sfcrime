@@ -55,6 +55,9 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var radialFiltered = data;
 	var timeFiltered = data;
 	var typeFiltered = data;
+	var radAndTimeFiltered = data;
+	var radAndTypeFiltered = data;
+	var timeAndTypeFiltered = data;
 	//Variables for home and work locations
 	var homeLoc = [0,0];
 	var workLoc = [0,0];
@@ -70,24 +73,68 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workR = 0;
 
 	//Variables for time filtering
-	var startTime = 0
-	var endTime = 1439
+	var startTime = 0;
+	var endTime = 1439;
+
+	//type filtering globals?
+
+	//filter functions which will use global variables
+	function radialFilter(input) {
+		return pointsWithinRadius(pointsWithinRadius(input, homeLoc, homeR), workLoc, workR);
+	}
+
+	function timeFilter(input) {
+		return input.filter(function(d) {
+	    	hourmin = d.Time.split(":");
+	    	res = 60*(+hourmin[0]) + +hourmin[1];
+	    	if(startTime < endTime) {
+	    		return res >= startTime && res <= endTime;
+	    	}
+	    	return res >= startTime || res <= endTime;
+    	});
+	}
+
+	function typeFilter(input) {
+		return input;
+	}
+	
+	//change functions
+	function radChanged(newSet) {
+		radialFiltered = newSet;
+		radAndTimeFiltered = radialFilter(timeFiltered);
+		radAndTypeFiltered = radialFilter(typeFiltered);
+		visiblePoints = radialFilter(timeAndTypeFiltered);
+		graphPoints(visiblePoints);
+	}
+
+	function timeChanged(newSet) {
+		timeFiltered = newSet;
+		console.log(newSet.length);
+		radAndTimeFiltered = timeFilter(radialFiltered);
+		timeAndTypeFiltered = timeFilter(typeFiltered);
+		visiblePoints = timeFilter(radAndTypeFiltered);
+		graphPoints(visiblePoints);
+	}
+
+	function typeChanged(newSet) {
+		typeFiltered = newSet;
+		radAndTypeFiltered = typeFilter(radialFiltered);
+		timeAndTypeFiltered = typeFilter(timeFiltered);
+		visiblePoints = typeFilter(radAndTimeFiltered);
+		graphPoints(visiblePoints);
+	}
 
 	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
 		homeDot.attr("r", 0);
 		homeArea.style("opacity", 0);
-		radialFiltered = data;
-		visiblePoints = timeFiltered;//Add in filter for type
-		graphPoints(visiblePoints);
+		radChanged(data);
 		homeSelected = false;
 	});
 
 	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
 		workDot.attr("r", 0);
 		workArea.style("opacity", 0);
-		radialFiltered = data;
-		visiblePoints = timeFiltered;//Add filter for type
-		graphPoints(visiblePoints);
+		radChanged(data);
 		workSelected = false;
 	});
 
@@ -100,11 +147,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 			homeArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
 			homeSelected = true;
 			if(homeSelected && workSelected) {
-				var filtered = timeFiltered;//Add in filter for type
-				homeAreaCrimes = pointsWithinRadius(filtered, homeLoc, homeR);
-				visiblePoints = pointsWithinRadius(homeAreaCrimes, workLoc, workR);
-				graphPoints(visiblePoints);
-				addDescrHovers();
+				homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
+				radChanged(pointsWithinRadius(homeAreaCrimes,workLoc,workR));
 			}
 			
 		} else if(!workSelected) {
@@ -113,11 +157,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 			workArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
 			workSelected = true;
 			if(homeSelected && workSelected) {
-				var filtered = timeFiltered;//Add in filter for type
-				workAreaCrimes = pointsWithinRadius(filtered, workLoc, workR);
-				visiblePoints = pointsWithinRadius(workAreaCrimes, homeLoc, homeR);
-				graphPoints(visiblePoints);
-				addDescrHovers();
+				workAreaCrimes = pointsWithinRadius(data, workLoc, workR);
+				radChanged(pointsWithinRadius(workAreaCrimes,homeLoc,homeR));
 			}
 		}
 	});
@@ -141,6 +182,7 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .attr("description", function(d) { return d['Description']; })
                        .attr("type", function(d) { return d['Category']; })
                        .style("fill", "blue");
+        addDescrHovers();
 	}
 
 	graphPoints(visiblePoints);
@@ -165,11 +207,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 		homeR = value;
 		changeRadius(homeArea, homeSelected, value);
 		if(homeSelected && workSelected) {
-			var filtered = timeFiltered;//add filter for type
-			homeAreaCrimes = pointsWithinRadius(filtered, homeLoc, value);
-			visiblePoints = pointsWithinRadius(homeAreaCrimes, workLoc, workR);
-			graphPoints(visiblePoints);
-			addDescrHovers();
+			homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
+			radChanged(pointsWithinRadius(homeAreaCrimes,workLoc,workR));
 		}
 	};
 	var workRadius = function(evt, value) {
@@ -177,11 +216,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 		workR = value;
 		changeRadius(workArea, workSelected, value);
 		if(homeSelected && workSelected) {
-			var filtered = timeFiltered;//add filter for type
-			workAreaCrimes = pointsWithinRadius(data, workLoc, value);
-			visiblePoints = pointsWithinRadius(workAreaCrimes, homeLoc, homeR);
-			graphPoints(visiblePoints);
-			addDescrHovers();
+			workAreaCrimes = pointsWithinRadius(data, workLoc, workR);
+			radChanged(pointsWithinRadius(workAreaCrimes,homeLoc,homeR));
 		}
 	};
 
@@ -279,6 +315,11 @@ d3.json("scpd_incidents.json", function(error, json) {
     function pieBrush() {
     d3.selectAll("path.pieminutes")
     .style("fill", piebrushIntersect)
+    startTime = piebrush.extent()[0];
+    endTime = piebrush.extent()[1];
+    console.log(startTime, endTime);
+    var newTimeFiltered = timeFilter(data);
+    timeChanged(newTimeFiltered);
   }
 
   function piebrushIntersect(d,i) {
@@ -287,10 +328,9 @@ d3.json("scpd_incidents.json", function(error, json) {
       var intersect = (d.data >= _e[0] && d.data <= _e[1]);
     }
     else {
-      var intersect = (d.data >= _e[0]) || (d.data <= _e[1]);      
+      var intersect = (d.data >= _e[0]) || (d.data <= _e[1]);    
     }
-
-    return intersect ? "rgb(241,90,64)" : "rgb(231,231,231)";
+    return intersect ? "rgb(246,139,51)" : "rgb(231,231,231)";
   }
 
     svg2.append("g")
