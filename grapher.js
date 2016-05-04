@@ -244,17 +244,29 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 // ====== Circular brush shizz ===========
 	var piebrush = d3.svg.circularbrush()
-      .range([0,23])
+      .range([0,1439])
       .innerRadius(30)
       .outerRadius(45)
       .handleSize(0.1)
-      .extent([0,23]) //initial range
+      .extent([0,1439]) //initial range
   	.on("brush", pieBrush);
 
-    var hours = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+    var minutes = Array.apply(null, Array(1440)).map(function (_, i) {return i;});;
+    var hours = Array.apply(null, Array(24)).map(function (_, i) {return i;});;
 
   	var pie = d3.layout.pie().value(function() {return 1}).sort(d3.ascending);
   	var pieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
+  	svg2.append("g")
+	  .attr("transform", "translate(150,400)")
+  	.selectAll("path")
+	  .data(pie(minutes))
+	  .enter()
+	  .append("path")
+	  .attr("class", "pieminutes")
+	  .attr("d", pieArc);
+
+	  var underPie = d3.layout.pie().value(function() {return 1}).sort(d3.ascending);
+  	var underPieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
   	svg2.append("g")
 	  .attr("transform", "translate(150,400)")
   	.selectAll("path")
@@ -262,10 +274,10 @@ d3.json("scpd_incidents.json", function(error, json) {
 	  .enter()
 	  .append("path")
 	  .attr("class", "piehours")
-	  .attr("d", pieArc);
+	  .attr("d", underPieArc);
     
     function pieBrush() {
-    d3.selectAll("path.piehours")
+    d3.selectAll("path.pieminutes")
     .style("fill", piebrushIntersect)
   }
 
@@ -278,7 +290,7 @@ d3.json("scpd_incidents.json", function(error, json) {
       var intersect = (d.data >= _e[0]) || (d.data <= _e[1]);      
     }
 
-    return intersect ? "rgb(241,90,64)" : "rgb(231,231,231)"
+    return intersect ? "rgb(241,90,64)" : "rgb(231,231,231)";
   }
 
     svg2.append("g")

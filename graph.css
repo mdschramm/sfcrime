@@ -45,8 +45,14 @@ image {
     cursor: move;
   }
 
-  path.piehours {
+  path.pieminutes {
       fill: rgb(246,139,51);
-    stroke: black;
-    stroke-width: 1px;
+    /*stroke: black;
+    stroke-width: 1px;*/
+  }
+
+  path.piehours {
+  	fill-opacity: 0;
+  	stroke: black;
+  	stroke-width: 1px;
   }
