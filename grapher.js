@@ -27,26 +27,32 @@ d3.json("scpd_incidents.json", function(error, json) {
 	          .attr("height", height)
 	          .attr("xlink:href", "sf-map.svg");
 
+	//Variables for home and work locations
 	var homeLoc = [0,0];
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
+	var homeCircle = svg.append("circle")
+	.attr("r", 5)
+	.style("fill", "red");
+	var workCircle = svg.append("circle")
+	.attr("r", 5)
+	.style("fill", "green")
 
 	document.querySelector('svg').addEventListener('click', function(e) {
-
 		var x = e.offsetX;
 		var y = e.offsetY;
 		if(!homeSelected) {
-		homeLoc = projection.invert([x,y]);
-		
+			homeLoc = projection.invert([x,y]);
+			homeCircle.attr("cx", x).attr("cy", y);
+			homeSelected = true;
+			
 		} else if(!workSelected) {
-
+			workLoc = projection.invert([x,y]);
+			workCircle.attr("cx", x).attr("cy", y);
+			workSelected = true;
 		}
-		svg.append("circle")
-			.attr("cx", x)
-			.attr("cy", y)
-			.attr("r", 2)
-            .style("fill", "red");
+		
 	});
 
 	function graphPoints(pointArray) {
