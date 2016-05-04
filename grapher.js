@@ -4,7 +4,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 	if (error) return console.warn(error);
 	data = json;
   
-
 	// Set up size
 	var width = 750,
 		height = width;
@@ -23,9 +22,15 @@ d3.json("scpd_incidents.json", function(error, json) {
 		.attr("width", width)
 		.attr("height", height);
 
-	// Add svg map at correct size, assumes map is saved in a subdirectory called "data"
 	svg.append("image")
 	          .attr("width", width)
 	          .attr("height", height)
 	          .attr("xlink:href", "sf-map.svg");
+
+	function graphPoints(pointArray) {
+		console.log(pointArray);
+	}
+
+	graphPoints(data);
+
 });
