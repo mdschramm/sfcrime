@@ -38,18 +38,21 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
-	var homeCircle = svg.append("circle").style("fill", "red").attr("class", "base-dot");
-	var workCircle = svg.append("circle").style("fill", "green").attr("class", "base-dot");
-
+	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot");
+	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot");
+	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0.4).attr("class", "base-dot");
+	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0.4).attr("class", "base-dot");
 
 
 	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
-		homeCircle.attr("r", 0);
+		homeDot.attr("r", 0);
+		homeArea.style("opacity", 0);
 		homeSelected = false;
 	});
 
 	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
-		workCircle.attr("r", 0);
+		workDot.attr("r", 0);
+		workArea.style("opacity", 0);
 		workSelected = false;
 	});
 
@@ -58,12 +61,14 @@ d3.json("scpd_incidents.json", function(error, json) {
 		var y = e.offsetY;
 		if(!homeSelected) {
 			homeLoc = projection.invert([x,y]);
-			homeCircle.attr("cx", x).attr("cy", y).attr("r", 5);
+			homeDot.attr("cx", x).attr("cy", y).attr("r", 5);
+			homeArea.attr("cx", x).attr("cy", y).style("opacity",0.4);
 			homeSelected = true;
 			
 		} else if(!workSelected) {
 			workLoc = projection.invert([x,y]);
-			workCircle.attr("cx", x).attr("cy", y).attr("r",5);
+			workDot.attr("cx", x).attr("cy", y).attr("r",5);
+			workArea.attr("cx", x).attr("cy", y).style("opacity",0.4);			
 			workSelected = true;
 		}
 	});
@@ -93,12 +98,23 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 
 	// Slider Logic for Radius of HOME
-	var homeRadius = function(evt, value) {
-		// console.log(value);
-		// value returns 0 - 100 (real nnumbers, not whole)
+	var changeRadius = function(target, shown, val) {
+		target.attr("r", val);
+		if(shown) {
+			target.style("opacity",0.4);
+		}
 	}
+	var homeRadius = function(evt, value) {
+		changeRadius(homeArea, homeSelected, value);
+	};
+	var workRadius = function(evt, value) {
+		changeRadius(workArea, workSelected, value);
+	};
 
-	d3.select('#slider').call(d3.slider().on("slide", homeRadius));
+
+	d3.select('#homeSlider').call(d3.slider().on("slide", homeRadius));
+	d3.select('#workSlider').call(d3.slider().on("slide", workRadius));
+
 
 
 	// Hover functionality for Description
