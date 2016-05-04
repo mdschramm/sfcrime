@@ -32,10 +32,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
-	var homeCircle = svg.append("circle")
-	.style("fill", "red");
-	var workCircle = svg.append("circle")
-	.style("fill", "green");
+	var homeCircle = svg.append("circle").style("fill", "red");
+	var workCircle = svg.append("circle").style("fill", "green");
 
 
 	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
@@ -63,9 +61,14 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	});
 
+	
+	// We don't want complicated booleans being passed into d3's custom
+	// filter function, so instead we will just keep subsets of pointArray in memory
 
 	function graphPoints(pointArray) {
-		var circles = svg.selectAll("circle")
+		var circles = svg.selectAll("circle").remove();
+
+		circles = svg.selectAll("circle")
                           .data(pointArray)
                           .enter()
                           .append("circle");
@@ -78,5 +81,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	graphPoints(data.data);
+
 
 });
