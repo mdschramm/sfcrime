@@ -101,7 +101,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		if(shown) {
 			target.style("opacity",0.4);
 		}
-	}
+	};
 	var homeRadius = function(evt, value) {
 		changeRadius(homeArea, homeSelected, value);
 	};
