@@ -2,7 +2,13 @@ var data; // a global
 
 d3.json("scpd_incidents.json", function(error, json) {
 	if (error) return console.warn(error);
-	data = json;
+
+	seenIds = {};
+	data = json.data.filter(function(d) {
+		alreadySeen = seenIds[d.IncidentNumber];
+		seenIds[d.IncidentNumber] = true;
+		return !alreadySeen;
+	});
   
 	// Set up size
 	var width = 750,
@@ -27,30 +33,48 @@ d3.json("scpd_incidents.json", function(error, json) {
 	          .attr("height", height)
 	          .attr("xlink:href", "sf-map.svg");
 
+	//Variables for home and work locations
 	var homeLoc = [0,0];
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
+	var homeCircle = svg.append("circle").style("fill", "red");
+	var workCircle = svg.append("circle").style("fill", "green");
+
+
+	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
+		homeCircle.attr("r", 0);
+		homeSelected = false;
+	});
+
+	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
+		workCircle.attr("r", 0);
+		workSelected = false;
+	});
 
 	document.querySelector('svg').addEventListener('click', function(e) {
-
 		var x = e.offsetX;
 		var y = e.offsetY;
 		if(!homeSelected) {
-		homeLoc = projection.invert([x,y]);
-		
+			homeLoc = projection.invert([x,y]);
+			homeCircle.attr("cx", x).attr("cy", y).attr("r", 5);
+			homeSelected = true;
+			
 		} else if(!workSelected) {
-
+			workLoc = projection.invert([x,y]);
+			workCircle.attr("cx", x).attr("cy", y).attr("r",5);
+			workSelected = true;
 		}
-		svg.append("circle")
-			.attr("cx", x)
-			.attr("cy", y)
-			.attr("r", 2)
-            .style("fill", "red");
 	});
 
+	
+	// We don't want complicated booleans being passed into d3's custom
+	// filter function, so instead we will just keep subsets of pointArray in memory
+
 	function graphPoints(pointArray) {
-		var circles = svg.selectAll("circle")
+		var circles = svg.selectAll("circle").remove();
+
+		circles = svg.selectAll("circle")
                           .data(pointArray)
                           .enter()
                           .append("circle");
@@ -59,10 +83,11 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .attr("cx", function (d) { return projection(d.Location)[0]; })
                        .attr("cy", function (d) { return projection(d.Location)[1]; })
                        .attr("r", 2)
+                       .attr("id", function(d) { return d['IncidentNumber']; })
                        .style("fill", "blue");
 	}
 
-	graphPoints(data.data);
+	graphPoints(data);
 
 
 	// Slider Logic for Radius of HOME
