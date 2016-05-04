@@ -4,12 +4,21 @@ d3.json("scpd_incidents.json", function(error, json) {
 	if (error) return console.warn(error);
 
 	seenIds = {};
+	var types = {};
 	data = json.data.filter(function(d) {
+		types[d.Category] = true;
 		alreadySeen = seenIds[d.IncidentNumber];
 		seenIds[d.IncidentNumber] = true;
 		return !alreadySeen;
 	});
-  
+
+	//makes all the types into an array with non-repeating elements
+	var typesArr = [];
+	for (var key in types) {
+		typesArr.push(key);
+	}
+	typesArr.sort(); //alphabetically
+
 	// Set up size
 	var width = 750,
 		height = width;
@@ -23,7 +32,13 @@ d3.json("scpd_incidents.json", function(error, json) {
 	// projection([lon, lat]) returns [x, y]
 	// projection.invert([x, y]) returns [lon, lat]
 
-	// Add an svg element to the DOM
+	// svg.append("image")
+	//           .attr("width", width)
+	//           .attr("height", height)
+	//           .attr("xlink:href", "sf-map.svg")
+	//           // .attr("transform", "translate(-100,-100)");
+
+	// add another svg for legend
 	var svg = d3.select("#chart").append("svg")
 		.attr("width", width)
 		.attr("height", height);
@@ -31,7 +46,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	svg.append("image")
 	          .attr("width", width)
 	          .attr("height", height)
-	          .attr("xlink:href", "sf-map.svg");
+	          .attr("xlink:href", "sf-map.svg")
+	          // .attr("transform", "translate(-100,-100)");
 
 	//Variables for home and work locations
 	var homeLoc = [0,0];
@@ -138,4 +154,35 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	);
 
+	// Legend for ordinal crime types
+	var ordinal = d3.scale.ordinal()
+		.domain(typesArr)
+		.range(["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"]);
+		// .range([ "rgb(153, 107, 195)", "rgb(56, 106, 197)", "rgb(93, 199, 76)", "rgb(223, 199, 31)", "rgb(234, 118, 47)"]);
+
+	// var svg = d3.select("svg");
+	// var svg = d3.select("#legend");
+	// Add an svg element to the DOM
+	console.log($("#legend"));
+	var svg2 = d3.select("#legend").append("svg")
+		.attr("width", width)
+		.attr("height", height+100);
+
+	// TODO this is where to set the coordinates for the legend
+	svg2.append("g")
+		.attr("class", "legendOrdinal")
+		.attr("transform", "translate(10,25)");
+
+	var legendOrdinal = d3.legend.color()
+		//d3 symbol creates a path-string, for example
+		//"M0,-8.059274488676564L9.306048591020996,
+		//8.059274488676564 -9.306048591020996,8.059274488676564Z"
+		.shape("path", d3.svg.symbol().type("square").size(140)())
+		.shapePadding(10)
+		.scale(ordinal);
+
+	svg2.select(".legendOrdinal")
+		.call(legendOrdinal);
+
+	// END
 });

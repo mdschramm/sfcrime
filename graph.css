@@ -8,7 +8,14 @@ body {
   stroke: #000;
   shape-rendering: crispEdges;
 }
+
 image {
 	pointer-events: none;
 	z-index: -1;
+}
+
+#legend {
+	position: absolute;
+	top: 0px;
+	left: 780px;
 }
