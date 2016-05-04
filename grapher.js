@@ -105,10 +105,10 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	};
 	var homeRadius = function(evt, value) {
-		changeRadius(homeArea, homeSelected, value);
+		changeRadius(homeArea, homeSelected, 10+ value*7);
 	};
 	var workRadius = function(evt, value) {
-		changeRadius(workArea, workSelected, value);
+		changeRadius(workArea, workSelected, 10+ value*7);
 	};
 
 
@@ -123,6 +123,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	$( "circle" ).hover(
 		function() {
 			var enter = $(this);
+			if(enter.hasClass("base-dot")) return; 
 			var des = enter.attr('description');
 			console.log(des);
 			enter.css("fill", "red");
@@ -130,6 +131,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 			$des.text(des);
 		}, function() {
 			var exit = $(this);
+			if(exit.hasClass("base-dot")) return; 
 			exit.css("fill", "blue");
 			exit.attr("r", 2);
 			$des.text("Please hover");
