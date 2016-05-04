@@ -9,6 +9,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		seenIds[d.IncidentNumber] = true;
 		return !alreadySeen;
 	});
+	var visiblePoints = data;
   
 	// Set up size
 	var width = 750,
@@ -42,17 +43,25 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot");
 	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0.4).attr("class", "base-dot");
 	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0.4).attr("class", "base-dot");
+	var homeAreaCrimes = [];
+	var workAreaCrimes = [];
+	var homeR = 0;
+	var workR = 0;
 
 
 	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
 		homeDot.attr("r", 0);
 		homeArea.style("opacity", 0);
+		visiblePoints = data;
+		graphPoints(visiblePoints);
 		homeSelected = false;
 	});
 
 	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
 		workDot.attr("r", 0);
 		workArea.style("opacity", 0);
+		visiblePoints = data;
+		graphPoints(visiblePoints);
 		workSelected = false;
 	});
 
@@ -64,12 +73,22 @@ d3.json("scpd_incidents.json", function(error, json) {
 			homeDot.attr("cx", x).attr("cy", y).attr("r", 5);
 			homeArea.attr("cx", x).attr("cy", y).style("opacity",0.4);
 			homeSelected = true;
+			if(homeSelected && workSelected) {
+				homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
+				visiblePoints = pointsWithinRadius(homeAreaCrimes, workLoc, workR);
+				graphPoints(visiblePoints);
+			}
 			
 		} else if(!workSelected) {
 			workLoc = projection.invert([x,y]);
 			workDot.attr("cx", x).attr("cy", y).attr("r",5);
-			workArea.attr("cx", x).attr("cy", y).style("opacity",0.4);			
+			workArea.attr("cx", x).attr("cy", y).style("opacity",0.4);
 			workSelected = true;
+			if(homeSelected && workSelected) {
+				workAreaCrimes = pointsWithinRadius(data, workLoc, workR);
+				visiblePoints = pointsWithinRadius(workAreaCrimes, homeLoc, homeR);
+				graphPoints(visiblePoints);
+			}
 		}
 	});
 	
@@ -94,8 +113,15 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .style("fill", "blue");
 	}
 
-	graphPoints(data);
+	graphPoints(visiblePoints);
 
+	var pointsWithinRadius = function(superset, center, radius) {
+		center = projection(center);
+		return superset.filter(function(d) {
+			loc = projection(d.Location);
+			return Math.sqrt((loc[0] - center[0])*(loc[0] - center[0]) + (loc[1] - center[1])*(loc[1] - center[1])) < radius;
+		});
+	};
 
 	// Slider Logic for Radius of HOME
 	var changeRadius = function(target, shown, val) {
@@ -105,10 +131,24 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	};
 	var homeRadius = function(evt, value) {
-		changeRadius(homeArea, homeSelected, 10+ value*7);
+		value = 10+ value*7;
+		homeR = value;
+		changeRadius(homeArea, homeSelected, value);
+		if(homeSelected && workSelected) {
+			homeAreaCrimes = pointsWithinRadius(data, homeLoc, value);
+			visiblePoints = pointsWithinRadius(homeAreaCrimes, workLoc, workR);
+			graphPoints(visiblePoints);
+		}
 	};
 	var workRadius = function(evt, value) {
-		changeRadius(workArea, workSelected, 10+ value*7);
+		value = 10 + value*7;
+		workR = value;
+		changeRadius(workArea, workSelected, value);
+		if(homeSelected && workSelected) {
+			workAreaCrimes = pointsWithinRadius(data, workLoc, value);
+			visiblePoints = pointsWithinRadius(workAreaCrimes, homeLoc, homeR);
+			graphPoints(visiblePoints);
+		}
 	};
 
 
@@ -123,9 +163,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	$( "circle" ).hover(
 		function() {
 			var enter = $(this);
-			if(enter.hasClass("base-dot")) return; 
+			if(enter.hasClass("base-dot")) return;
 			var des = enter.attr('description');
-			console.log(des);
 			enter.css("fill", "red");
 			enter.attr("r", 4);
 			$des.text(des);
