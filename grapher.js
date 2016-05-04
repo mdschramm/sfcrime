@@ -104,12 +104,14 @@ d3.json("scpd_incidents.json", function(error, json) {
 		radAndTimeFiltered = radialFilter(timeFiltered);
 		radAndTypeFiltered = radialFilter(typeFiltered);
 		visiblePoints = radialFilter(timeAndTypeFiltered);
+		if(!homeSelected || !workSelected) {
+			visiblePoints = data;
+		}
 		graphPoints(visiblePoints);
 	}
 
 	function timeChanged(newSet) {
 		timeFiltered = newSet;
-		console.log(newSet.length);
 		radAndTimeFiltered = timeFilter(radialFiltered);
 		timeAndTypeFiltered = timeFilter(typeFiltered);
 		visiblePoints = timeFilter(radAndTypeFiltered);
@@ -125,17 +127,17 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
+		homeSelected = false;
 		homeDot.attr("r", 0);
 		homeArea.style("opacity", 0);
 		radChanged(data);
-		homeSelected = false;
 	});
 
 	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
+		workSelected = false;
 		workDot.attr("r", 0);
 		workArea.style("opacity", 0);
 		radChanged(data);
-		workSelected = false;
 	});
 
 	document.querySelector('svg').addEventListener('click', function(e) {
@@ -317,7 +319,6 @@ d3.json("scpd_incidents.json", function(error, json) {
     .style("fill", piebrushIntersect)
     startTime = piebrush.extent()[0];
     endTime = piebrush.extent()[1];
-    console.log(startTime, endTime);
     var newTimeFiltered = timeFilter(data);
     timeChanged(newTimeFiltered);
   }
