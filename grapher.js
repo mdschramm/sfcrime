@@ -33,27 +33,36 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var homeSelected = false;
 	var workSelected = false;
 	var homeCircle = svg.append("circle")
-	.attr("r", 5)
 	.style("fill", "red");
 	var workCircle = svg.append("circle")
-	.attr("r", 5)
-	.style("fill", "green")
+	.style("fill", "green");
+
+
+	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
+		homeCircle.attr("r", 0);
+		homeSelected = false;
+	});
+
+	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
+		workCircle.attr("r", 0);
+		workSelected = false;
+	});
 
 	document.querySelector('svg').addEventListener('click', function(e) {
 		var x = e.offsetX;
 		var y = e.offsetY;
 		if(!homeSelected) {
 			homeLoc = projection.invert([x,y]);
-			homeCircle.attr("cx", x).attr("cy", y);
+			homeCircle.attr("cx", x).attr("cy", y).attr("r", 5);
 			homeSelected = true;
 			
 		} else if(!workSelected) {
 			workLoc = projection.invert([x,y]);
-			workCircle.attr("cx", x).attr("cy", y);
+			workCircle.attr("cx", x).attr("cy", y).attr("r",5);
 			workSelected = true;
 		}
-		
 	});
+
 
 	function graphPoints(pointArray) {
 		var circles = svg.selectAll("circle")
