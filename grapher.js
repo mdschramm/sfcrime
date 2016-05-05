@@ -26,8 +26,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 	// Set up projection that map is using
 	var projection = d3.geo.mercator()
-		.center([-122.433701, 37.767683]) // San Francisco, roughly
-		.scale(225000)
+		.center([-122.433701, 37.767683]) // San Francisco, roughly 37.767683
+		.scale(225000) // 225000
 		.translate([width / 2, height / 2]);
 	// This is the mapping between <longitude, latitude> position to <x, y> pixel position on the map
 	// projection([lon, lat]) returns [x, y]
