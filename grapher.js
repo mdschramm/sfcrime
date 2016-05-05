@@ -163,7 +163,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 				homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
 				radChanged(pointsWithinRadius(homeAreaCrimes,workLoc,workR));
 			}
-			
 		} else if(!workSelected) {
 			workLoc = projection.invert([x,y]);
 			workDot.attr("cx", x).attr("cy", y).attr("r",5);
@@ -244,14 +243,18 @@ d3.json("scpd_incidents.json", function(error, json) {
 		$( "circle" ).hover(
 			function() {
 				var enter = $(this);
-				if(enter.hasClass("base-dot")) return;
+				if(enter[0].className.animVal === "base-dot") {
+					return;
+				}
 				var des = enter.attr('description');
 				enter.css("fill", "red");
 				enter.attr("r", 4);
 				$des.text(des);
 			}, function() {
 				var exit = $(this);
-				if(exit.hasClass("base-dot")) return;
+				if(exit[0].className.animVal === "base-dot") {
+					return;
+				}
 				exit.css("fill", "blue");
 				exit.attr("r", 2);
 				$des.text("Please hover");
@@ -298,13 +301,14 @@ var effPieBrush = debounce(pieBrush, 50);
       .extent([0,1439]) //initial range
   	.on("brush", effPieBrush);
 
-    var minutes = Array.apply(null, Array(1440)).map(function (_, i) {return i;});;
-    var hours = Array.apply(null, Array(24)).map(function (_, i) {return i;});;
+    var minutes = Array.apply(null, Array(1440)).map(function (_, i) {return i;});
+    var hours = Array.apply(null, Array(24)).map(function (_, i) {return i;});
 
   	var pie = d3.layout.pie().value(function() {return 1}).sort(d3.ascending);
   	var pieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
+  	var svg2 = d3.select("#chart").append("svg").attr("width",400).attr("height", 400);
   	svg2.append("g")
-	  .attr("transform", "translate(150,400)")
+	  .attr("transform", "translate(150,200)")
   	.selectAll("path")
 	  .data(pie(minutes))
 	  .enter()
@@ -315,20 +319,13 @@ var effPieBrush = debounce(pieBrush, 50);
 	  var underPie = d3.layout.pie().value(function() {return 1}).sort(d3.ascending);
   	var underPieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
   	svg2.append("g")
-	  .attr("transform", "translate(150,400)")
+	  .attr("transform", "translate(150,200)")
   	.selectAll("path")
 	  .data(pie(hours))
 	  .enter()
 	  .append("path")
 	  .attr("class", "piehours")
 	  .attr("d", underPieArc);
-    
-
-
-
-    
-
-  
 
   function piebrushIntersect(d,i) {
     var _e = piebrush.extent();
@@ -343,7 +340,7 @@ var effPieBrush = debounce(pieBrush, 50);
 
     svg2.append("g")
 	  .attr("class", "brush")
-	  .attr("transform", "translate(150,400)")
+	  .attr("transform", "translate(150,200)")
 	  .call(piebrush);
 
 	// END
