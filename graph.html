@@ -28,6 +28,7 @@
 
 
   <div id = "left-side-bar" class="col-md-4">
+    <div class="row"><div class="col-md-12"><h1>A 24 Hour Look into Types of SF Crime</h1></div></div>
     <div class="row"><div class="col-md-12"><h3>Location Radii</h3></div></div>
     <div id ="sliders" class="row">
       <div class="col-md-6">
@@ -46,11 +47,9 @@
       <div id= "crime-description"></div>
     </div></div>
 
-    <div class="row"><div class="col-md-12"><h3>24 Hour Clock Brush</h3></div></div>
-    <div class="row"><div class="col-md-12">Drag the inner circle to see crimes during certian time periods</div></div>
-    <div class="row"><div class="col-md-12"><div id="legend"></div></div></div>
-    
-    <select id="selecter" class="selectpicker" multiple data-max-options="20">
+    <div class="row" id="type-label"><div class="col-md-12"><h3>Types of Crime</h3></div></div>
+    <div class="row"><div class="col-md-12">
+    <select id="selecter" class="selectpicker" multiple data-max-options="10">
     <option value="ARSON">ARSON</option>
     <option value="ASSUALT">ASSUALT</option>
     <option value="BRIBERY">BRIBERY</option>
@@ -86,8 +85,14 @@
     <option value="VEHICLE THEFT">VEHICLE THEFT</option>
     <option value="WARRANTS">WARRANTS</option>
     <option value="WEAPON LAWS">WEAPON LAWS</option>
-  </select>
-  <div id='tags'></div>
+    </select>
+    
+    <div id='tags'></div>   </div></div>
+
+    <!-- clock -->
+    <div class="row" id="row-clock"><div class="col-md-12"><h3>24 Hour Clock Brush</h3></div></div>
+    <div class="row"><div class="col-md-12">Drag the edges of the inner circle to see crimes during certian time periods. You can also drag the entire semi-circle around to see how it changes in a 24 hour period</div></div>
+    <div class="row"><div class="col-md-12"><div id="legend"></div></div></div>
   </div>
   <!-- <input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" /> -->
   

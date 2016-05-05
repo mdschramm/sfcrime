@@ -74,10 +74,18 @@ image {
     stroke-width: 1px;*/
   }
 
+  #row-clock {
+    margin-top: 10px;
+  }
+
   path.piehours {
   	fill-opacity: 0;
   	stroke: black;
   	stroke-width: 1px;
+  }
+
+  #type-label {
+    margin-bottom: 7px;
   }
 
   .tagtext {
@@ -85,12 +93,12 @@ image {
     display: inline-block;
     padding: 6px 10px 4px;
     border-radius: 5px;
-    margin-right: 5px;
+    margin-right: 8px;
+    margin-top: 10px;
   }
 
   #tags {
-    position: absolute;
-    left: 100px;
+    padding-top: 5px;
   }
 
   .exits {
