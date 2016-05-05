@@ -129,7 +129,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	function timeFilter(input) {
-		console.log(input.constructor);
+		// console.log(input.constructor);
 		return input.filter(function(d) {
 	    	var hourmin = d.Time.split(":");
 	    	var res = 60*(+hourmin[0]) + +hourmin[1];
@@ -147,7 +147,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		var filtered = input.filter(function(d) {
 			return d.Category in typeToColor;
 		});
-		console.log(filtered.constructor);
+		// console.log(filtered.constructor);
 		return filtered;
 	}
 	
@@ -188,6 +188,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	document.querySelector('svg').addEventListener('click', function(e) {
+		$("#instruct").html("Location Radii");
 		var x = e.offsetX;
 		var y = e.offsetY;
 		if(!homeSelected) {
