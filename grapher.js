@@ -260,36 +260,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 	
 	addDescrHovers();
-	
 
-	// Legend for ordinal crime types
-	var ordinal = d3.scale.ordinal()
-		.domain(typesArr)
-		.range(["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"]);
-		// .range([ "rgb(153, 107, 195)", "rgb(56, 106, 197)", "rgb(93, 199, 76)", "rgb(223, 199, 31)", "rgb(234, 118, 47)"]);
-
-	// var svg = d3.select("svg");
-	// var svg = d3.select("#legend");
-	// Add an svg element to the DOM
-	var svg2 = d3.select("#legend").append("svg")
-		.attr("width", width)
-		.attr("height", height+100);
-
-	// TODO this is where to set the coordinates for the legend
-	svg2.append("g")
-		.attr("class", "legendOrdinal")
-		.attr("transform", "translate(10,25)");
-
-	var legendOrdinal = d3.legend.color()
-		//d3 symbol creates a path-string, for example
-		//"M0,-8.059274488676564L9.306048591020996,
-		//8.059274488676564 -9.306048591020996,8.059274488676564Z"
-		.shape("path", d3.svg.symbol().type("square").size(140)())
-		.shapePadding(10)
-		.scale(ordinal);
-
-	svg2.select(".legendOrdinal")
-		.call(legendOrdinal);
 
 // ====== Circular brush shizz ===========
 
@@ -376,4 +347,20 @@ var effPieBrush = debounce(pieBrush, 50);
 	  .call(piebrush);
 
 	// END
+	// Autocomplete
+	var comboplete = new Awesomplete(Awesomplete.$('input.dropdown-input'), {
+		minChars: 0,
+	});
+	Awesomplete.$('.dropdown-btn').addEventListener("click", function() {
+		if (comboplete.ul.childNodes.length === 0) {
+			comboplete.minChars = 0;
+			comboplete.evaluate();
+		}
+		else if (comboplete.ul.hasAttribute('hidden')) {
+			comboplete.open();
+		}
+		else {
+			comboplete.close();
+		}
+	});
 });
