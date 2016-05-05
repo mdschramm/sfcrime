@@ -4,6 +4,8 @@ var data; // a global
 d3.json("scpd_incidents.json", function(error, json) {
 	if (error) return console.warn(error);
 
+	var typeToColor = {};
+
 	var seenIds = {};
 	var types = {};
 	data = json.data.filter(function(d) {
@@ -145,19 +147,19 @@ d3.json("scpd_incidents.json", function(error, json) {
 		graphPoints(visiblePoints);
 	}
 
-	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
-		homeSelected = false;
-		homeDot.attr("r", 0);
-		homeArea.style("opacity", 0);
-		radChanged(data);
-	});
+	// document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
+	// 	homeSelected = false;
+	// 	homeDot.attr("r", 0);
+	// 	homeArea.style("opacity", 0);
+	// 	radChanged(data);
+	// });
 
-	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
-		workSelected = false;
-		workDot.attr("r", 0);
-		workArea.style("opacity", 0);
-		radChanged(data);
-	});
+	// document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
+	// 	workSelected = false;
+	// 	workDot.attr("r", 0);
+	// 	workArea.style("opacity", 0);
+	// 	radChanged(data);
+	// });
 
 	document.querySelector('svg').addEventListener('click', function(e) {
 		var x = e.offsetX;
@@ -446,6 +448,11 @@ var effPieBrush = debounce(pieBrush, 50);
 		tagNum++;
 		var indexNum = typesArr.indexOf(category);
 		var color = getColor();
+
+		// maps type to color
+		typeToColor[category] = color;
+
+		//rest of logic
 		$("#tags").append("<div colorTag='"+color+"' i='"+indexNum+"' class='tagtext "+category+"' id="+tagNum+"><span id='tag"+tagNum+"'></span></div>");
 		var outer = $("#"+tagNum);
 		var text = $("#tag"+tagNum);
@@ -466,6 +473,12 @@ var effPieBrush = debounce(pieBrush, 50);
 
 	var removeTag = function(index) {
 		var i = typeIndices.indexOf(index);
+
+		//deletes color association 
+		var category = typesArr[index];
+		delete typeToColor[category];
+
+		// rest of logic
 		console.log(i);
 		typeIndices.splice(i, 1); // removes this index from array
 		console.log(typeIndices);
