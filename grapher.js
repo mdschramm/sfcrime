@@ -1,13 +1,14 @@
+'use strict'
 var data; // a global
 
 d3.json("scpd_incidents.json", function(error, json) {
 	if (error) return console.warn(error);
 
-	seenIds = {};
+	var seenIds = {};
 	var types = {};
 	data = json.data.filter(function(d) {
 		types[d.Category] = true;
-		alreadySeen = seenIds[d.IncidentNumber];
+		var alreadySeen = seenIds[d.IncidentNumber];
 		seenIds[d.IncidentNumber] = true;
 		return !alreadySeen;
 	});
@@ -46,7 +47,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	svg.append("image")
 	          .attr("width", width)
 	          .attr("height", height)
-	          .attr("xlink:href", "sf-map.svg")
+	          .attr("xlink:href", "sf-map.svg");
 	          // .attr("transform", "translate(-100,-100)");
 
 
@@ -65,8 +66,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workSelected = false;
 	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot");
 	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot");
-	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0.25).attr("class", "base-dot");
-	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0.25).attr("class", "base-dot");
+	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot");
+	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot");
 	var homeAreaCrimes = [];
 	var workAreaCrimes = [];
 	var homeR = 0;
@@ -87,8 +88,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 	function timeFilter(input) {
 		return input.filter(function(d) {
-	    	hourmin = d.Time.split(":");
-	    	res = 60*(+hourmin[0]) + +hourmin[1];
+	    	var hourmin = d.Time.split(":");
+	    	var res = 60*(+hourmin[0]) + +hourmin[1];
 	    	if(startTime < endTime) {
 	    		return res >= startTime && res <= endTime;
 	    	}
@@ -202,7 +203,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var pointsWithinRadius = function(superset, center, radius) {
 		center = projection(center);
 		return superset.filter(function(d) {
-			loc = projection(d.Location);
+			var loc = projection(d.Location);
 			return Math.sqrt((loc[0] - center[0])*(loc[0] - center[0]) + (loc[1] - center[1])*(loc[1] - center[1])) < radius;
 		});
 	};
@@ -233,8 +234,29 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	};
 
-	d3.select('#homeSlider').call(d3.slider().on("slide", homeRadius));
-	d3.select('#workSlider').call(d3.slider().on("slide", workRadius));
+
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+var effHomeRadius = debounce(homeRadius, 50);
+
+
+var effWorkRadius = debounce(workRadius, 50);
+
+	d3.select('#homeSlider').call(d3.slider().on("slide", effHomeRadius));
+	d3.select('#workSlider').call(d3.slider().on("slide", effWorkRadius));
 
 	// Hover functionality for Description
 	function addDescrHovers() {
@@ -267,20 +289,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 // ====== Circular brush shizz ===========
 
-function debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
-};
+
 
 function pieBrush() {
     d3.selectAll("path.pieminutes")
