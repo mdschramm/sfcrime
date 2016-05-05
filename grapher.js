@@ -18,7 +18,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	for (var key in types) {
 		typesArr.push(key);
 	}
-	typesArr.sort(); //alphabetically
+	typesArr.sort();//alphabetically
+	var typeIndices = []; 
 	// var selecter = $("#selecter");
 	// console.log(selecter[0]);
 	// for (var i = 0; i < 4; i++) {
@@ -203,8 +204,6 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .style("fill", "blue");
         addDescrHovers();
 	}
-
-	graphPoints(visiblePoints);
 
 	var pointsWithinRadius = function(superset, center, radius) {
 		center = projection(center);
@@ -439,7 +438,7 @@ var effPieBrush = debounce(pieBrush, 50);
 	}
 
 	// var types = typesArr;
-	var typeIndices = [];
+	
 
 	var tagNum = 0;
 	var addTag = function(category) {
@@ -462,38 +461,6 @@ var effPieBrush = debounce(pieBrush, 50);
 			"display": "inline-block",
 			"font-weight": "bold"
 		});
-
-		// add event listener
-		// x.click(function(e) {
-		// 	var cur = $(this);
-		// 	console.log("Got here!");
-		// 	console.log(cur[0]);
-		// 	// testing
-		// 	// var parent = $('#selecter').parent();
-		// 	// var firstchild = $(parent.children()[1]);
-		// 	// var secondchild = $(firstchild.children()[0]);
-		// 	// var li = $(secondchild.children()[0]); //.removeClass('selected');
-		// 	// // .children()[0].children()[0].removeClass("selected");
-			
-		// 	// first deselect from the selection
-		// 	var curIndex = cur.parent().attr("i");
-		// 	var location = typeIndices.indexOf(curIndex);
-		// 	typeIndices.splice(location, 1); //removed from list now
-
-		// 	//now deslect and reselect
-		// 	// var $selecter = $("#selecter");
-		// 	// $selecter.selectpicker('deselectAll');
-		// 	// for (var i = 0; i < typeIndices.length; i++) {
-		// 	// 	var current = typesArr[typeIndices[i]];
-		// 	// 	$selecter.val(current);
-		// 	// }
-		// 	// $selecter.selectpicker('render');
-
-		// 	// now remove actual tag
-		// 	var curColor = cur.attr("color");
-		// 	putBackColor(curColor);
-		// 	x.parent().remove();
-		// });
 		
 	}
 
@@ -517,77 +484,12 @@ var effPieBrush = debounce(pieBrush, 50);
 			// get rid of tag
 			console.log("removing");
 			removeTag(index);
+			// var newset = typeFiltered.
 			return;
 		}
   		var cur = typesArr[index]; //current type selected
   		typeIndices.push(index);
-  		console.log(typeIndices);
   		addTag(cur);
 	});
 
-	// addTag("Test Here");
-
-	// addTag("THEFT");
-	// addTag("LOITERING");
-	// addTag("PROSTITUTION");
-	// addTag("BEING A BITCH");
-	// addTag("PISTOL WHIPPING PRIEST");
-
-	// selection options
-	// arguments: reference to select list, callback function (optional)
-// function getSelectedOptions(sel, fn) {
-//     var opts = [], opt;
-//     // console.log(sel);
-//     // loop through options in select list
-//     $("[value="+sel.options[0]+"]").css("");
-//     for (var i=0, len=sel.options.length; i<len; i++) {
-//         opt = sel.options[i];
-        
-//         // check if selected
-//         if ( opt.selected ) {
-//             // add to array of option elements to return from this function
-//             opts.push(opt);
-            
-//             // invoke optional callback function if provided
-//             if (fn) { // called here 3 times based on select
-//                 fn(opt);
-//             }
-//         }
-//     }
-    
-//     // return array containing references to selected option elements
-//     return opts;
-// }
-
-// // example callback function (selected options passed one by one)
-// function callback(opt) {
-//     // display in textarea for this example
-//     var display = document.getElementById('display');
-//     display.innerHTML += opt.value + ', ';
-//     console.log(opt.value);
-
-//     for (var i=0, len=sel.options.length; i<len; i++) {
-
-//     }
-
-//     // can access properties of opt, such as...
-//     //alert( opt.value )
-//     //alert( opt.text )
-//     //alert( opt.form )
-// }
-
-// // anonymous function onchange for select list with id demoSel
-// document.getElementById('demoSel').onchange = function(e) {
-//     // get reference to display textarea
-//     var display = document.getElementById('display');
-//     display.innerHTML = ''; // reset
-    
-//     // callback fn handles selected options
-//     // WHAT IS THIS?
-//     getSelectedOptions(this, callback);
-    
-//     // remove ', ' at end of string
-//     var str = display.innerHTML.slice(0, -2);
-//     display.innerHTML = str;
-// };
 });
