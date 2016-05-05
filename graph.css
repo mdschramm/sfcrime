@@ -97,6 +97,15 @@ image {
      cursor: pointer;
   }
 
+  #homeRad #workRad {
+    pointer-events:none;
+    z-index:-1;
+  }
+
+  #homeLoc #workLoc {
+    z-index:2;
+  }
+
   .clocklab {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

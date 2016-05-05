@@ -73,10 +73,10 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
-	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot");
-	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot");
-	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot");
-	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot");
+	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","homeRad");
+	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","workRad");
+	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot").attr("id","homeLoc");
+	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot").attr("id","workLoc");
 	var homeAreaCrimes = [];
 	var workAreaCrimes = [];
 	var homeR = 0;
@@ -88,6 +88,39 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 	var notDrawing = true;
 
+	$("#homeLoc").draggable
+	({
+	  drag: function(e, ui) {
+	  	var x = e.offsetX;
+		var y = e.offsetY;
+		homeLoc = projection.invert([x,y]);
+		homeDot.attr("cx", x).attr("cy", y).attr("r", 5);
+		homeArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
+		homeSelected = true;
+		if(homeSelected && workSelected) {
+			homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
+			radChanged(pointsWithinRadius(homeAreaCrimes,workLoc,workR));
+		}
+	  } //changed
+	});
+
+	$("#workLoc").draggable
+	({
+	  drag: function(e, ui) {
+	  	var x = e.offsetX;
+		var y = e.offsetY;
+		workLoc = projection.invert([x,y]);
+		workDot.attr("cx", x).attr("cy", y).attr("r", 5);
+		workArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
+		workSelected = true;
+		if(homeSelected && workSelected) {
+			workAreaCrimes = pointsWithinRadius(data, workLoc, workR);
+			radChanged(pointsWithinRadius(workAreaCrimes,homeLoc,homeR));
+		}
+	  } //changed
+	});
+
+
 	//type filtering globals?
 
 	//filter functions which will use global variables
@@ -96,6 +129,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	function timeFilter(input) {
+		console.log(input.constructor);
 		return input.filter(function(d) {
 	    	var hourmin = d.Time.split(":");
 	    	var res = 60*(+hourmin[0]) + +hourmin[1];
@@ -107,8 +141,14 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	function typeFilter(input) {
-		// ============ IMPLEMENT ===============
-		return input;
+		if(typeIndices.length === 0) {
+			return input;
+		}
+		var filtered = input.filter(function(d) {
+			return d.Category in typeToColor;
+		});
+		console.log(filtered.constructor);
+		return filtered;
 	}
 	
 	//change functions
@@ -147,20 +187,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 		graphPoints(visiblePoints);
 	}
 
-	// document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
-	// 	homeSelected = false;
-	// 	homeDot.attr("r", 0);
-	// 	homeArea.style("opacity", 0);
-	// 	radChanged(data);
-	// });
-
-	// document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
-	// 	workSelected = false;
-	// 	workDot.attr("r", 0);
-	// 	workArea.style("opacity", 0);
-	// 	radChanged(data);
-	// });
-
 	document.querySelector('svg').addEventListener('click', function(e) {
 		var x = e.offsetX;
 		var y = e.offsetY;
@@ -184,6 +210,12 @@ d3.json("scpd_incidents.json", function(error, json) {
 			}
 		}
 	});
+
+	function homeDrag(e) {
+		console.log(e);
+	}
+
+
 	
 	// We don't want complicated booleans being passed into d3's custom
 	// filter function, so instead we will just keep subsets of pointArray in memory
@@ -207,7 +239,8 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .attr("day", function(d) { return d['DayOfWeek']; })
                        .attr("time", function(d) { return d['Time']; })
                        .attr("resolution", function(d) { return d['Resolution']; })
-                       .style("fill", "blue");
+                       .style("fill", "blue")
+                       .style("fill", function(d) { return typeToColor[d.Category];});
         addDescrHovers();
 	}
 
@@ -289,7 +322,7 @@ var effWorkRadius = debounce(workRadius, 50);
 				var day = enter.attr('day');
 				var time = enter.attr('time');
 				var res = enter.attr('resolution');
-
+				enter.attr("oldcolor", enter.css("fill"));
 				enter.css("fill", "red");
 				enter.attr("r", 4);
 				$des.text(des + " on " + day + ", " + date + " at " + time + ". Resolution: " + res);
@@ -298,7 +331,7 @@ var effWorkRadius = debounce(workRadius, 50);
 				if(exit[0].className.animVal === "base-dot") {
 					return;
 				}
-				exit.css("fill", "blue");
+				exit.css("fill", exit.attr("oldcolor"));
 				exit.attr("r", 2);
 				
 				$des.text("No crime selected");
@@ -509,12 +542,27 @@ var effPieBrush = debounce(pieBrush, 50);
 			// get rid of tag
 			
 			removeTag(index);
-			// var newset = typeFiltered.
+			var newset;
+			if(typeIndices.length === 0) {
+				newset = data;
+			} else {
+				newset = typeFiltered.filter(function(d) {
+					return d.Category !== typesArr[index];
+				});
+			}
+			typeChanged(newset);
 			return;
 		}
   		var cur = typesArr[index]; //current type selected
   		typeIndices.push(index);
   		addTag(cur);
+  		var newset = data.filter(function(d) {
+  			return d.Category === typesArr[index];
+  		});
+  		if(typeIndices.length > 1) {
+  			newset = newset.concat(typeFiltered);
+  		}
+  		typeChanged(newset);
 	});
 
 });
