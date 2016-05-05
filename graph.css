@@ -74,6 +74,10 @@ image {
      cursor: pointer;
   }
 
+  #homeRad #workRad {
+    pointer-events:none;
+  }
+
   .clocklab {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

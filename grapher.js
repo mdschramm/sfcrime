@@ -71,10 +71,10 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
-	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot");
-	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot");
-	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot");
-	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot");
+	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot").attr("ondrag","homeDrag(event)").attr("draggable", "true");
+	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot").attr("ondrag","workDrag(event)").attr("draggable", "true");
+	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","homeRad");
+	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","workRad");
 	var homeAreaCrimes = [];
 	var workAreaCrimes = [];
 	var homeR = 0;
@@ -145,20 +145,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 		graphPoints(visiblePoints);
 	}
 
-	document.querySelector('input[name="change-home"]').addEventListener('click', function(e) {
-		homeSelected = false;
-		homeDot.attr("r", 0);
-		homeArea.style("opacity", 0);
-		radChanged(data);
-	});
-
-	document.querySelector('input[name="change-work"]').addEventListener('click', function(e) {
-		workSelected = false;
-		workDot.attr("r", 0);
-		workArea.style("opacity", 0);
-		radChanged(data);
-	});
-
 	document.querySelector('svg').addEventListener('click', function(e) {
 		var x = e.offsetX;
 		var y = e.offsetY;
@@ -182,6 +168,12 @@ d3.json("scpd_incidents.json", function(error, json) {
 			}
 		}
 	});
+
+	function homeDrag(e) {
+		console.log(e);
+	}
+
+
 	
 	// We don't want complicated booleans being passed into d3's custom
 	// filter function, so instead we will just keep subsets of pointArray in memory
@@ -484,12 +476,20 @@ var effPieBrush = debounce(pieBrush, 50);
 			// get rid of tag
 			console.log("removing");
 			removeTag(index);
-			// var newset = typeFiltered.
+			var newset = typeFiltered.filter(function(d) {
+				return d.Category != typesArr[index];
+			});
+			typeChanged(newset);
 			return;
 		}
   		var cur = typesArr[index]; //current type selected
   		typeIndices.push(index);
   		addTag(cur);
+  		var newset = data.filter(function(d) {
+  			return d.Category === typesArr[index];
+  		});
+  		newset += typeFiltered;
+  		typeChanged(newset);
 	});
 
 });
