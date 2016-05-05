@@ -336,6 +336,11 @@ var effPieBrush = debounce(pieBrush, 50);
 	  .attr("class", "piehours")
 	  .attr("d", underPieArc);
 
+	svg2.append("text").text("12am").attr("class", "clocklab").attr("transform", "translate(140,115)");
+	svg2.append("text").text("6am").attr("class", "clocklab").attr("transform", "translate(234,207)");
+	svg2.append("text").text("12pm").attr("class", "clocklab").attr("transform", "translate(137,295)");
+	svg2.append("text").text("6pm").attr("class", "clocklab").attr("transform", "translate(40,205)");
+
   function piebrushIntersect(d,i) {
     var _e = piebrush.extent();
     if (_e[0] < _e[1]) {
