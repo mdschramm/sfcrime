@@ -25,13 +25,30 @@
 <!-- I'll show you a body ;) -->
 <body>
 	<div id="chart" class="col-md-6"></div>
+
+
   <div id = "left-side-bar" class="col-md-4">
-    <label>Point A Radius</label><div id="homeSlider"></div>
-    <!-- <input type="button" name="change-home"  >Change Home -->
-    <label>Point B Radius</label><div id="workSlider"></div>
-    <!-- <input type="button" name="change-work" >Change Work -->
-    <div id="legend"></div>
-    <div id= "crime-description"></div>
+    <div class="row"><div class="col-md-12"><h3>Location Radii</h3></div></div>
+    <div id ="sliders" class="row">
+      <div class="col-md-6">
+        <div id="home">Home (Red) Radius</div><div id="homeSlider"></div>
+      <!-- <input type="button" name="change-home"  >Change Home -->
+      </div>
+      <div class="col-md-6">
+        <div id="work">Work (Green) Radius</div><div id="workSlider"></div>
+      </div>
+      <!-- <input type="button" name="change-work" >Change Work -->
+    </div>
+
+    <!-- Now we want the description -->
+    <div class="row"><div class="col-md-12"><h3>Crime Description</h3></div></div>
+    <div class="row"><div class="col-md-12">
+      <div id= "crime-description"></div>
+    </div></div>
+
+    <div class="row"><div class="col-md-12"><h3>24 Hour Clock Brush</h3></div></div>
+    <div class="row"><div class="col-md-12">Drag the inner circle to see crimes during certian time periods</div></div>
+    <div class="row"><div class="col-md-12"><div id="legend"></div></div></div>
     
     <select id="selecter" class="selectpicker" multiple data-max-options="20">
     <option value="ARSON">ARSON</option>

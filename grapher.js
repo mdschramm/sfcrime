@@ -203,6 +203,10 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .attr("id", function(d) { return d['IncidentNumber']; })
                        .attr("description", function(d) { return d['Description']; })
                        .attr("type", function(d) { return d['Category']; })
+                       .attr("date", function(d) { return d['Date']; })
+                       .attr("day", function(d) { return d['DayOfWeek']; })
+                       .attr("time", function(d) { return d['Time']; })
+                       .attr("resolution", function(d) { return d['Resolution']; })
                        .style("fill", "blue");
         addDescrHovers();
 	}
@@ -265,20 +269,30 @@ var effWorkRadius = debounce(workRadius, 50);
 	d3.select('#homeSlider').call(d3.slider().on("slide", effHomeRadius));
 	d3.select('#workSlider').call(d3.slider().on("slide", effWorkRadius));
 
+	// var hovered = false;
 	// Hover functionality for Description
 	function addDescrHovers() {
 		var $des = $("#crime-description");
-		$des.text("Please hover");
+		$des.text("To see a description of a specific crime, hover over it on the map!");
 		$( "circle" ).hover(
 			function() {
+				
 				var enter = $(this);
 				if(enter[0].className.animVal === "base-dot") {
 					return;
 				}
 				var des = enter.attr('description');
+				var date = enter.attr('date');
+				date = date.substring(0, 10);
+				date = new Date(date).toString().substring(4, 15);
+				
+				var day = enter.attr('day');
+				var time = enter.attr('time');
+				var res = enter.attr('resolution');
+
 				enter.css("fill", "red");
 				enter.attr("r", 4);
-				$des.text(des);
+				$des.text(des + " on " + day + ", " + date + " at " + time + ". Resolution: " + res);
 			}, function() {
 				var exit = $(this);
 				if(exit[0].className.animVal === "base-dot") {
@@ -286,7 +300,8 @@ var effWorkRadius = debounce(workRadius, 50);
 				}
 				exit.css("fill", "blue");
 				exit.attr("r", 2);
-				$des.text("Please hover");
+				
+				$des.text("No crime selected");
 			}
 		);
 	}
@@ -306,10 +321,13 @@ var effWorkRadius = debounce(workRadius, 50);
 		.attr("width", width)
 		.attr("height", height+100);
 
+	var distX = -20;
+	var distY = -100;
+
 	// TODO this is where to set the coordinates for the legend
 	svg2.append("g")
 		.attr("class", "legendOrdinal")
-		.attr("transform", "translate(10,25)");
+		.attr("transform", "translate("+distX+","+distY+")");
 
 	var legendOrdinal = d3.legend.color()
 		//d3 symbol creates a path-string, for example
@@ -340,8 +358,8 @@ var effPieBrush = debounce(pieBrush, 50);
 
 	var piebrush = d3.svg.circularbrush()
       .range([0,1439])
-      .innerRadius(30)
-      .outerRadius(45)
+      .innerRadius(30) // keep them smaller
+      .outerRadius(45) // keep smaller
       .handleSize(0.1)
       .extent([0,1439]) //initial range
   	.on("brush", effPieBrush);
@@ -353,7 +371,7 @@ var effPieBrush = debounce(pieBrush, 50);
   	var pieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
   	var svg2 = d3.select("#left-side-bar").append("svg").attr("width",400).attr("height", 400);
   	svg2.append("g")
-	  .attr("transform", "translate(150,200)")
+	  .attr("transform", "translate("+(distX+140)+","+(distY+175)+")")
   	.selectAll("path")
 	  .data(pie(minutes))
 	  .enter()
@@ -364,7 +382,7 @@ var effPieBrush = debounce(pieBrush, 50);
 	  var underPie = d3.layout.pie().value(function() {return 1}).sort(d3.ascending);
   	var underPieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
   	svg2.append("g")
-	  .attr("transform", "translate(150,200)")
+	  .attr("transform", "translate("+(distX+140)+","+(distY+175)+")")
   	.selectAll("path")
 	  .data(pie(hours))
 	  .enter()
@@ -372,10 +390,10 @@ var effPieBrush = debounce(pieBrush, 50);
 	  .attr("class", "piehours")
 	  .attr("d", underPieArc);
 
-	svg2.append("text").text("12am").attr("class", "clocklab").attr("transform", "translate(140,115)");
-	svg2.append("text").text("6am").attr("class", "clocklab").attr("transform", "translate(234,207)");
-	svg2.append("text").text("12pm").attr("class", "clocklab").attr("transform", "translate(137,295)");
-	svg2.append("text").text("6pm").attr("class", "clocklab").attr("transform", "translate(40,205)");
+	svg2.append("text").text("12am").attr("class", "clocklab").attr("transform", "translate("+(distX+130)+","+(distY+90)+")");
+	svg2.append("text").text("6am").attr("class", "clocklab").attr("transform", "translate("+(distX+224)+","+(distY+182)+")");
+	svg2.append("text").text("12pm").attr("class", "clocklab").attr("transform", "translate("+(distX+127)+","+(distY+270)+")");
+	svg2.append("text").text("6pm").attr("class", "clocklab").attr("transform", "translate("+(distX+30)+","+(distY+180)+")");
 
   function piebrushIntersect(d,i) {
     var _e = piebrush.extent();
@@ -390,7 +408,7 @@ var effPieBrush = debounce(pieBrush, 50);
 
     svg2.append("g")
 	  .attr("class", "brush")
-	  .attr("transform", "translate(150,200)")
+	  .attr("transform", "translate("+(distX+140)+","+(distY+ 175)+")")
 	  .call(piebrush);
 
 	// END
@@ -479,23 +497,17 @@ var effPieBrush = debounce(pieBrush, 50);
 		delete typeToColor[category];
 
 		// rest of logic
-		console.log(i);
 		typeIndices.splice(i, 1); // removes this index from array
-		console.log(typeIndices);
-		// var category = typesArr[index];
 		var tag = $("[i='"+index+"'");
-		console.log("REMOVING");
-		console.log(tag[0]);
 		var color = tag.attr("colorTag");
 		putBackColor(color);
-		console.log("removing tag now");
 		tag.remove();
 	}
 
 	$('#selecter').on('changed.bs.select', function (e, index) {
 		if (typeIndices.indexOf(index) != -1) { // already selected, so trying to deselect
 			// get rid of tag
-			console.log("removing");
+			
 			removeTag(index);
 			// var newset = typeFiltered.
 			return;

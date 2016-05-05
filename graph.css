@@ -9,9 +9,32 @@ body {
   shape-rendering: crispEdges;
 }
 
+#home {
+  color: red;
+  padding-top: 0px;
+}
+
+#work {
+  color: green;
+  padding-top: 0px;
+}
+
+#crime-description {
+  height: 60px;
+}
+
+/*#sliders {
+  padding-top: 0px !important;
+  margin-top: 0px !important;
+}*/
+
 image {
 	pointer-events: none;
 	z-index: -1;
+}
+
+#left-side-bar {
+  z-index: 100;
 }
 
 #legend {
