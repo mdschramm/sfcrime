@@ -4,6 +4,8 @@ var data; // a global
 d3.json("scpd_incidents.json", function(error, json) {
 	if (error) return console.warn(error);
 
+	var typeToColor = {};
+
 	var seenIds = {};
 	var types = {};
 	data = json.data.filter(function(d) {
@@ -94,6 +96,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	function timeFilter(input) {
+		console.log(input.constructor);
 		return input.filter(function(d) {
 	    	var hourmin = d.Time.split(":");
 	    	var res = 60*(+hourmin[0]) + +hourmin[1];
@@ -105,8 +108,14 @@ d3.json("scpd_incidents.json", function(error, json) {
 	}
 
 	function typeFilter(input) {
-		// ============ IMPLEMENT ===============
-		return input;
+		if(typeIndices.length === 0) {
+			return input;
+		}
+		var filtered = input.filter(function(d) {
+			return d.Category in typeToColor;
+		});
+		console.log(filtered.constructor);
+		return filtered;
 	}
 	
 	//change functions
@@ -193,7 +202,7 @@ d3.json("scpd_incidents.json", function(error, json) {
                        .attr("id", function(d) { return d['IncidentNumber']; })
                        .attr("description", function(d) { return d['Description']; })
                        .attr("type", function(d) { return d['Category']; })
-                       .style("fill", "blue");
+                       .style("fill", function(d) { return typeToColor[d.Category];});
         addDescrHovers();
 	}
 
@@ -266,6 +275,7 @@ var effWorkRadius = debounce(workRadius, 50);
 					return;
 				}
 				var des = enter.attr('description');
+				enter.attr("oldcolor", enter.css("fill"));
 				enter.css("fill", "red");
 				enter.attr("r", 4);
 				$des.text(des);
@@ -274,7 +284,7 @@ var effWorkRadius = debounce(workRadius, 50);
 				if(exit[0].className.animVal === "base-dot") {
 					return;
 				}
-				exit.css("fill", "blue");
+				exit.css("fill", exit.attr("oldcolor"));
 				exit.attr("r", 2);
 				$des.text("Please hover");
 			}
@@ -438,6 +448,11 @@ var effPieBrush = debounce(pieBrush, 50);
 		tagNum++;
 		var indexNum = typesArr.indexOf(category);
 		var color = getColor();
+
+		// maps type to color
+		typeToColor[category] = color;
+
+		//rest of logic
 		$("#tags").append("<div colorTag='"+color+"' i='"+indexNum+"' class='tagtext "+category+"' id="+tagNum+"><span id='tag"+tagNum+"'></span></div>");
 		var outer = $("#"+tagNum);
 		var text = $("#tag"+tagNum);
@@ -458,16 +473,17 @@ var effPieBrush = debounce(pieBrush, 50);
 
 	var removeTag = function(index) {
 		var i = typeIndices.indexOf(index);
-		console.log(i);
+
+		//deletes color association 
+		var category = typesArr[index];
+		delete typeToColor[category];
+
+		// rest of logic
 		typeIndices.splice(i, 1); // removes this index from array
-		console.log(typeIndices);
 		// var category = typesArr[index];
 		var tag = $("[i='"+index+"'");
-		console.log("REMOVING");
-		console.log(tag[0]);
 		var color = tag.attr("colorTag");
 		putBackColor(color);
-		console.log("removing tag now");
 		tag.remove();
 	}
 
@@ -476,9 +492,14 @@ var effPieBrush = debounce(pieBrush, 50);
 			// get rid of tag
 			console.log("removing");
 			removeTag(index);
-			var newset = typeFiltered.filter(function(d) {
-				return d.Category != typesArr[index];
-			});
+			var newset;
+			if(typeIndices.length === 0) {
+				newset = data;
+			} else {
+				newset = typeFiltered.filter(function(d) {
+					return d.Category !== typesArr[index];
+				});
+			}
 			typeChanged(newset);
 			return;
 		}
@@ -488,7 +509,9 @@ var effPieBrush = debounce(pieBrush, 50);
   		var newset = data.filter(function(d) {
   			return d.Category === typesArr[index];
   		});
-  		newset += typeFiltered;
+  		if(typeIndices.length > 1) {
+  			newset = newset.concat(typeFiltered);
+  		}
   		typeChanged(newset);
 	});
 
