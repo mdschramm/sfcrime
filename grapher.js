@@ -76,6 +76,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var startTime = 0;
 	var endTime = 1439;
 
+	var notDrawing = true;
+
 	//type filtering globals?
 
 	//filter functions which will use global variables
@@ -290,13 +292,40 @@ d3.json("scpd_incidents.json", function(error, json) {
 		.call(legendOrdinal);
 
 // ====== Circular brush shizz ===========
+
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+function pieBrush() {
+    d3.selectAll("path.pieminutes")
+    .style("fill", piebrushIntersect);
+    startTime = piebrush.extent()[0];
+    endTime = piebrush.extent()[1];
+    var newTimeFiltered = timeFilter(data);
+    timeChanged(newTimeFiltered);
+  }
+  
+var effPieBrush = debounce(pieBrush, 50);
+
 	var piebrush = d3.svg.circularbrush()
       .range([0,1439])
       .innerRadius(30)
       .outerRadius(45)
       .handleSize(0.1)
       .extent([0,1439]) //initial range
-  	.on("brush", pieBrush);
+  	.on("brush", effPieBrush);
 
     var minutes = Array.apply(null, Array(1440)).map(function (_, i) {return i;});;
     var hours = Array.apply(null, Array(24)).map(function (_, i) {return i;});;
@@ -323,14 +352,12 @@ d3.json("scpd_incidents.json", function(error, json) {
 	  .attr("class", "piehours")
 	  .attr("d", underPieArc);
     
-    function pieBrush() {
-    d3.selectAll("path.pieminutes")
-    .style("fill", piebrushIntersect)
-    startTime = piebrush.extent()[0];
-    endTime = piebrush.extent()[1];
-    var newTimeFiltered = timeFilter(data);
-    timeChanged(newTimeFiltered);
-  }
+
+
+
+    
+
+  
 
   function piebrushIntersect(d,i) {
     var _e = piebrush.extent();
