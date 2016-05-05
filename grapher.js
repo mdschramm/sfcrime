@@ -18,6 +18,12 @@ d3.json("scpd_incidents.json", function(error, json) {
 		typesArr.push(key);
 	}
 	typesArr.sort(); //alphabetically
+	// var selecter = $("#selecter");
+	// console.log(selecter[0]);
+	// for (var i = 0; i < 4; i++) {
+	// 	var cur = typesArr[i];
+	// 	selecter.append("<option>"+cur+"</option>");
+	// }
 
 	// Set up size
 	var width = 750,
@@ -259,6 +265,35 @@ d3.json("scpd_incidents.json", function(error, json) {
 	
 	addDescrHovers();
 
+	// Legend for ordinal crime types
+	var ordinal = d3.scale.ordinal()
+		// .domain(typesArr)
+		// .range(["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"]);
+		// .range([ "rgb(153, 107, 195)", "rgb(56, 106, 197)", "rgb(93, 199, 76)", "rgb(223, 199, 31)", "rgb(234, 118, 47)"]);
+
+	// var svg = d3.select("svg");
+	// var svg = d3.select("#legend");
+	// Add an svg element to the DOM
+	var svg2 = d3.select("#legend").append("svg")
+		.attr("width", width)
+		.attr("height", height+100);
+
+	// TODO this is where to set the coordinates for the legend
+	svg2.append("g")
+		.attr("class", "legendOrdinal")
+		.attr("transform", "translate(10,25)");
+
+	var legendOrdinal = d3.legend.color()
+		//d3 symbol creates a path-string, for example
+		//"M0,-8.059274488676564L9.306048591020996,
+		//8.059274488676564 -9.306048591020996,8.059274488676564Z"
+		.shape("path", d3.svg.symbol().type("square").size(140)())
+		.shapePadding(10)
+		.scale(ordinal);
+
+	svg2.select(".legendOrdinal")
+		.call(legendOrdinal);
+
 
 // ====== Circular brush shizz ===========
 	var piebrush = d3.svg.circularbrush()
@@ -321,19 +356,200 @@ d3.json("scpd_incidents.json", function(error, json) {
 
 	// END
 	// Autocomplete
-	var comboplete = new Awesomplete(Awesomplete.$('input.dropdown-input'), {
-		minChars: 0,
+	// var $tag = $("#tags");
+	// $tag.attr('disabled','disabled');
+	// $tag.tagsinput('add', 'Test');
+
+	// var comboplete = new Awesomplete(Awesomplete.$('input.dropdown-input'), {
+	// 	minChars: 0,
+	// });
+	// Awesomplete.$('.dropdown-btn').addEventListener("click", function() {
+	// 	if (comboplete.ul.childNodes.length === 0) {
+	// 		comboplete.minChars = 0;
+	// 		comboplete.evaluate();
+	// 	}
+	// 	else if (comboplete.ul.hasAttribute('hidden')) {
+	// 		comboplete.open();
+	// 	}
+	// 	else {
+	// 		comboplete.close();
+	// 	}
+	// });
+
+	// 20 different colors
+	var colors = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
+	colors.reverse();
+	// var baseColors = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
+	// baseColors.reverse();
+	// var currentColor = -1; // when asked for color for first time, will start at index 0
+
+	var putBackColor = function(color) {
+		// var color = baseColors[currentColor];
+		// currentColor--;
+		colors.push(color);
+	}
+
+	var getColor = function() {
+		// currentColor++;
+		return colors.pop();
+	}
+
+	// console.log(typesArr);
+
+	var removeTag = function(tagName) {
+
+	}
+
+	// var types = typesArr;
+	var typeIndices = [];
+
+	var tagNum = 0;
+	var addTag = function(category) {
+		// var html = $("<div id="+tagNum+"><span id='tag"+tagNum+"'>TEST</span><span id='x"+tagNum+"'>x</div></div>");
+		tagNum++;
+		var indexNum = typesArr.indexOf(category);
+		var color = getColor();
+		$("#tags").append("<div colorTag='"+color+"' i='"+indexNum+"' class='tagtext "+category+"' id="+tagNum+"><span id='tag"+tagNum+"'></span></div>");
+		var outer = $("#"+tagNum);
+		var text = $("#tag"+tagNum);
+		var x = $("#x"+tagNum);
+		// <div color='"+color+"' class='exits' id='x"+tagNum+"'>X</div>
+
+		text.html(""+category+"");
+
+		outer.css({"background-color": color});
+		var middle = outer.height();
+		// x.css("margin", "20px");
+		x.css({
+			"display": "inline-block",
+			"font-weight": "bold"
+		});
+
+		// add event listener
+		// x.click(function(e) {
+		// 	var cur = $(this);
+		// 	console.log("Got here!");
+		// 	console.log(cur[0]);
+		// 	// testing
+		// 	// var parent = $('#selecter').parent();
+		// 	// var firstchild = $(parent.children()[1]);
+		// 	// var secondchild = $(firstchild.children()[0]);
+		// 	// var li = $(secondchild.children()[0]); //.removeClass('selected');
+		// 	// // .children()[0].children()[0].removeClass("selected");
+			
+		// 	// first deselect from the selection
+		// 	var curIndex = cur.parent().attr("i");
+		// 	var location = typeIndices.indexOf(curIndex);
+		// 	typeIndices.splice(location, 1); //removed from list now
+
+		// 	//now deslect and reselect
+		// 	// var $selecter = $("#selecter");
+		// 	// $selecter.selectpicker('deselectAll');
+		// 	// for (var i = 0; i < typeIndices.length; i++) {
+		// 	// 	var current = typesArr[typeIndices[i]];
+		// 	// 	$selecter.val(current);
+		// 	// }
+		// 	// $selecter.selectpicker('render');
+
+		// 	// now remove actual tag
+		// 	var curColor = cur.attr("color");
+		// 	putBackColor(curColor);
+		// 	x.parent().remove();
+		// });
+		
+	}
+
+	var removeTag = function(index) {
+		var i = typeIndices.indexOf(index);
+		console.log(i);
+		typeIndices.splice(i, 1); // removes this index from array
+		console.log(typeIndices);
+		// var category = typesArr[index];
+		var tag = $("[i='"+index+"'");
+		console.log("REMOVING");
+		console.log(tag[0]);
+		var color = tag.attr("colorTag");
+		putBackColor(color);
+		console.log("removing tag now");
+		tag.remove();
+	}
+
+	$('#selecter').on('changed.bs.select', function (e, index) {
+		if (typeIndices.indexOf(index) != -1) { // already selected, so trying to deselect
+			// get rid of tag
+			console.log("removing");
+			removeTag(index);
+			return;
+		}
+  		var cur = typesArr[index]; //current type selected
+  		typeIndices.push(index);
+  		console.log(typeIndices);
+  		addTag(cur);
 	});
-	Awesomplete.$('.dropdown-btn').addEventListener("click", function() {
-		if (comboplete.ul.childNodes.length === 0) {
-			comboplete.minChars = 0;
-			comboplete.evaluate();
-		}
-		else if (comboplete.ul.hasAttribute('hidden')) {
-			comboplete.open();
-		}
-		else {
-			comboplete.close();
-		}
-	});
+
+	// addTag("Test Here");
+
+	// addTag("THEFT");
+	// addTag("LOITERING");
+	// addTag("PROSTITUTION");
+	// addTag("BEING A BITCH");
+	// addTag("PISTOL WHIPPING PRIEST");
+
+	// selection options
+	// arguments: reference to select list, callback function (optional)
+// function getSelectedOptions(sel, fn) {
+//     var opts = [], opt;
+//     // console.log(sel);
+//     // loop through options in select list
+//     $("[value="+sel.options[0]+"]").css("");
+//     for (var i=0, len=sel.options.length; i<len; i++) {
+//         opt = sel.options[i];
+        
+//         // check if selected
+//         if ( opt.selected ) {
+//             // add to array of option elements to return from this function
+//             opts.push(opt);
+            
+//             // invoke optional callback function if provided
+//             if (fn) { // called here 3 times based on select
+//                 fn(opt);
+//             }
+//         }
+//     }
+    
+//     // return array containing references to selected option elements
+//     return opts;
+// }
+
+// // example callback function (selected options passed one by one)
+// function callback(opt) {
+//     // display in textarea for this example
+//     var display = document.getElementById('display');
+//     display.innerHTML += opt.value + ', ';
+//     console.log(opt.value);
+
+//     for (var i=0, len=sel.options.length; i<len; i++) {
+
+//     }
+
+//     // can access properties of opt, such as...
+//     //alert( opt.value )
+//     //alert( opt.text )
+//     //alert( opt.form )
+// }
+
+// // anonymous function onchange for select list with id demoSel
+// document.getElementById('demoSel').onchange = function(e) {
+//     // get reference to display textarea
+//     var display = document.getElementById('display');
+//     display.innerHTML = ''; // reset
+    
+//     // callback fn handles selected options
+//     // WHAT IS THIS?
+//     getSelectedOptions(this, callback);
+    
+//     // remove ', ' at end of string
+//     var str = display.innerHTML.slice(0, -2);
+//     display.innerHTML = str;
+// };
 });

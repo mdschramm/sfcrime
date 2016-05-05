@@ -6,12 +6,14 @@
   <link rel="stylesheet" type="text/css" href="graph.css">
   <link rel="stylesheet" type="text/css" href="d3-slider-master/d3.slider.css">
   <link rel="stylesheet" type="text/css" href="awesomplete-gh-pages/awesomplete.css">
+  <!-- <link rel="stylesheet" type="text/css" href="bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.css"> -->
   <!-- <script src="d3-slider-master/d3.slider.js"></script> -->
   <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
+  <link rel="stylesheet" type="text/css" href="bootstrap-3.3.6-dist/css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="bootstrap-select-master/dist/css/bootstrap-select.css">
 <!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"> -->
 
   <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -28,16 +30,105 @@
 	<div id="chart"></div>
   <div id="legend"></div>
   <div id= "crime-description"></div>
-  <div id = "left-side-bar"><div id="homeSlider"></div><div id="workSlider"></div></div>
+  <div id = "left-side-bar"><div id="homeSlider"></div><div id="workSlider"></div></div><br><br>
+  <select id="selecter" class="selectpicker" multiple data-max-options="20">
+    <option value="ARSON">ARSON</option>
+    <option value="ASSUALT">ASSUALT</option>
+    <option value="BRIBERY">BRIBERY</option>
+    <option value="BURGLARY">BURGLARY</option>
+    <option value="DISORDERLY CONDUCT">DISORDERLY CONDUCT</option>
+    <option value="DRIVING UNDER THE INFLUENCE">DRIVING UNDER THE INFLUENCE</option>
+    <option value="DRUG/NARCOTIC">DRUG/NARCOTIC</option>
+    <option value="DRUNKENNESS">DRUNKENNESS</option>
+    <option value="EMBEZZLEMENT">EMBEZZLEMENT</option>
+    <option value="EXTORTION">EXTORTION</option>
+    <option value="FAMILY OFFENSES">FAMILY OFFENSES</option>
+    <option value="FORGERY/COUNTERFEITING">FORGERY/COUNTERFEITING</option>
+    <option value="FRAUD">FRAUD</option>
+    <option value="GAMBLING">GAMBLING</option>
+    <option value="KIDNAPPING">KIDNAPPING</option>
+    <option value="LARCENY/THEFT">LARCENY/THEFT</option>
+    <option value="LIQUOR LAWS">LIQUOR LAWS</option>
+    <option value="LOITERING">LOITERING</option>
+    <option value="MISSING PERSON">MISSING PERSON</option>
+    <option value="NON-CRIMINAL">NON-CRIMINAL</option>
+    <option value="OTHER OFFENSES">OTHER OFFENSES</option>
+    <option value="PROSTITUTION">PROSTITUTION</option>
+    <option value="ROBBERY">ROBBERY</option>
+    <option value="RUNAWAY">RUNAWAY</option>
+    <option value="SECONDARY CODES">SECONDARY CODES</option>
+    <option value="SEX OFFENSES, FORCIBLE">SEX OFFENSES, FORCIBLE</option>
+    <option value="SEX OFFENSES, NON FORCIBLE">SEX OFFENSES, NON FORCIBLE</option>
+    <option value="STOLEN PROPERTY">STOLEN PROPERTY</option>
+    <option value="SUICIDE">SUICIDE</option>
+    <option value="SUSPICIOUS OCC">SUSPICIOUS OCC</option>
+    <option value="TRESPASS">TRESPASS</option>
+    <option value="VANDALISM">VANDALISM</option>
+    <option value="VEHICLE THEFT">VEHICLE THEFT</option>
+    <option value="WARRANTS">WARRANTS</option>
+    <option value="WEAPON LAWS">WEAPON LAWS</option>
+  </select>
+  <div id='tags'></div>
   <!-- <input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" /> -->
-  <label> "Type Here for Test: "
-    <div class="awesomplete">
-      <input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" aria-autocomplete="list">
-    </div>
-    <button class="dropdown-btn" type="button">
+  <!-- <label> "Type Here for Test: " -->
+  <!--   <div class="awesomplete">
+      <input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML, CSS, JavaScript, HTML, SVG, ARIA, MathML, CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" aria-autocomplete="list">
+    </div> -->
+    <!-- <button class="dropdown-btn" type="button">
       <span class="caret"></span>
-    </button>
-  </label>
+    </button> -->
+    <!-- <div class="form-group"> -->
+  <!--     <label for="typeSelect"></label>
+      <select id="typeSelect">
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+        <option>Disabl</option>
+        <option>Disabled seaaat</option>
+        <option>Disabled select</option>
+        <option>Disabled seleassdasdct</option>
+        <option>Disabled select</option>
+        <option>Disabled select</option>
+        <option>Dilect</option>
+        <option>Disabled select</option>
+        <option>Disabled select</option>
+        <option>Disabled seaalect</option>
+        <option>Disablect</option>
+        <option>Disabled select</option>
+        <option>Disaect</option>
+        <option>Disabled select</option>
+        <option>Disabled selecasdasdasdsat</option>
+        <option>Disabled select</option>
+        <option>Dt</option>
+        <option>Disabled select</option>
+        <option>Disabled selecaaat</option>
+        <option>Disable</option>
+      </select> -->
+    <!-- </div> -->
+  <!-- </label> -->
+  <!-- <form action="#" method="post" id="demoForm" class="demoForm">
+    <fieldset>
+        <legend>Demo: Get Selected Options</legend>
+    
+        <p>
+            <select name="demoSel[]" id="demoSel" size="4" multiple>
+                <option class="option" value="scroll">Scrolling Divs JavaScript</option>
+                <option class="option" value="tooltip">JavaScript Tooltips</option>
+                <option class="option" value="con_scroll">Continuous Scroller</option>
+                <option class="option" value="banner">Rotating Banner JavaScript</option>
+                <option class="option" value="random_img">Random Image PHP</option>
+                <option class="option" value="form_builder">PHP Form Generator</option>
+                <option class="option" value="table_class">PHP Table Class</option>
+                <option class="option" value="order_forms">PHP Order Forms</option>
+            </select>
+            <!input type="submit" value="Submit" />
+            <textarea name="display" id="display" placeholder="view select list value(s) onchange" cols="20" rows="4" readonly></textarea> -->
+       <!--  </p>
+        
+    </fieldset>
+</form>  -->
+
 
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -46,8 +137,15 @@
   <script src="d3-slider-master/d3.slider.js"></script>
   <script src="d3-legend.min.js"></script>
   <!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
+  <script src="bootstrap-3.3.6-dist/js/bootstrap.js"></script>
   <script src="awesomplete-gh-pages/awesomplete.js"></script>
+  <!-- <script src="bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.js"></script> -->
+  <!-- <script src="bootstrap-select-master/dist/js/bootstrap-select.js"></script> -->
   <script src="grapher.js"></script>
+  <script src="bootstrap-select-master/dist/js/bootstrap-select.js"></script>
+  <script> 
+
+  </script>
 </body>
 </html>

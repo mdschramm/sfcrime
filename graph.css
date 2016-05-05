@@ -56,3 +56,21 @@ image {
   	stroke: black;
   	stroke-width: 1px;
   }
+
+  .tagtext {
+    color: white;
+    display: inline-block;
+    padding: 6px 10px 4px;
+    border-radius: 5px;
+    margin-right: 5px;
+  }
+
+  #tags {
+    position: absolute;
+    left: 100px;
+  }
+
+  .exits {
+     cursor: pointer;
+  }
+
