@@ -73,8 +73,8 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
-	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","homeRad").attr("r", 50);
-	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","workRad").attr("r",50);
+	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","homeRad");
+	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","workRad");
 	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot").attr("id","homeLoc");
 	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot").attr("id","workLoc");
 	var homeAreaCrimes = [];
@@ -211,11 +211,6 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	});
 
-	function homeDrag(e) {
-		console.log(e);
-	}
-
-
 	
 	// We don't want complicated booleans being passed into d3's custom
 	// filter function, so instead we will just keep subsets of pointArray in memory
@@ -299,8 +294,8 @@ var effHomeRadius = debounce(homeRadius, 50);
 
 var effWorkRadius = debounce(workRadius, 50);
 
-	d3.select('#homeSlider').call(d3.slider().value(10).on("slide", effHomeRadius));
-	d3.select('#workSlider').call(d3.slider().value(10).on("slide", effWorkRadius));
+	d3.select('#homeSlider').call(d3.slider().on("slide", effHomeRadius));
+	d3.select('#workSlider').call(d3.slider().on("slide", effWorkRadius));
 
 	// var hovered = false;
 	// Hover functionality for Description
