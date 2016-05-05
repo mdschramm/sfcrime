@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var data; // a global
 
 d3.json("scpd_incidents.json", function(error, json) {
@@ -216,7 +216,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	};
 	var homeRadius = function(evt, value) {
-		value = 20 + value*7;
+		value = 20 + value*3;
 		homeR = value;
 		changeRadius(homeArea, homeSelected, value);
 		if(homeSelected && workSelected) {
@@ -225,7 +225,7 @@ d3.json("scpd_incidents.json", function(error, json) {
 		}
 	};
 	var workRadius = function(evt, value) {
-		value = 20 + value*7;
+		value = 20 + value*3;
 		workR = value;
 		changeRadius(workArea, workSelected, value);
 		if(homeSelected && workSelected) {
@@ -315,7 +315,7 @@ var effPieBrush = debounce(pieBrush, 50);
 
   	var pie = d3.layout.pie().value(function() {return 1}).sort(d3.ascending);
   	var pieArc = d3.svg.arc().innerRadius(65).outerRadius(80);
-  	var svg2 = d3.select("#chart").append("svg").attr("width",400).attr("height", 400);
+  	var svg2 = d3.select("#left-side-bar").append("svg").attr("width",400).attr("height", 400);
   	svg2.append("g")
 	  .attr("transform", "translate(150,200)")
   	.selectAll("path")

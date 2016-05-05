@@ -3,12 +3,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" href="graph.css">
   <link rel="stylesheet" type="text/css" href="d3-slider-master/d3.slider.css">
   <link rel="stylesheet" type="text/css" href="awesomplete-gh-pages/awesomplete.css">
   <!-- <script src="d3-slider-master/d3.slider.js"></script> -->
   <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+ 
 
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
@@ -21,16 +22,18 @@
 <!-- I'll show you a body ;) -->
 <body>
   <!-- <div id="top-bar"> -->
-    <input type="button" name="change-home" >Change Home
-    <input type="button" name="change-work" >Change Work
+    
 
   <!-- </div> -->
-	<div id="chart"></div>
-  <div id="legend"></div>
-  <div id= "crime-description"></div>
-  <div id = "left-side-bar"><div id="homeSlider"></div><div id="workSlider"></div></div>
-  <!-- <input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" /> -->
-  <label> "Type Here for Test: "
+	<div id="chart" class="col-md-6"></div>
+  <div id = "left-side-bar" class="col-md-4">
+    <div id="homeSlider"></div>
+    <input type="button" name="change-home"  >Change Home
+    <div id="workSlider"></div>
+    <input type="button" name="change-work" >Change Work
+    <div id="legend"></div>
+    <div id= "crime-description"></div>
+    <label> "Type Here for Test: "
     <div class="awesomplete">
       <input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" aria-autocomplete="list">
     </div>
@@ -38,6 +41,9 @@
       <span class="caret"></span>
     </button>
   </label>
+  </div>
+  <!-- <input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" /> -->
+  
 
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
