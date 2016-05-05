@@ -73,10 +73,10 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var workLoc = [0,0];
 	var homeSelected = false;
 	var workSelected = false;
-	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot").attr("ondrag","homeDrag(event)").attr("draggable", "true");
-	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot").attr("ondrag","workDrag(event)").attr("draggable", "true");
 	var homeArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","homeRad");
 	var workArea = svg.append("circle").style("fill", "gray").style("opacity",0).attr("class", "base-dot").attr("id","workRad");
+	var homeDot = svg.append("circle").style("fill", "red").attr("class", "base-dot").attr("id","homeLoc");
+	var workDot = svg.append("circle").style("fill", "green").attr("class", "base-dot").attr("id","workLoc");
 	var homeAreaCrimes = [];
 	var workAreaCrimes = [];
 	var homeR = 0;
@@ -87,6 +87,39 @@ d3.json("scpd_incidents.json", function(error, json) {
 	var endTime = 1439;
 
 	var notDrawing = true;
+
+	$("#homeLoc").draggable
+	({
+	  drag: function(e, ui) {
+	  	var x = e.offsetX;
+		var y = e.offsetY;
+		homeLoc = projection.invert([x,y]);
+		homeDot.attr("cx", x).attr("cy", y).attr("r", 5);
+		homeArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
+		homeSelected = true;
+		if(homeSelected && workSelected) {
+			homeAreaCrimes = pointsWithinRadius(data, homeLoc, homeR);
+			radChanged(pointsWithinRadius(homeAreaCrimes,workLoc,workR));
+		}
+	  } //changed
+	});
+
+	$("#workLoc").draggable
+	({
+	  drag: function(e, ui) {
+	  	var x = e.offsetX;
+		var y = e.offsetY;
+		workLoc = projection.invert([x,y]);
+		workDot.attr("cx", x).attr("cy", y).attr("r", 5);
+		workArea.attr("cx", x).attr("cy", y).style("opacity",0.25);
+		workSelected = true;
+		if(homeSelected && workSelected) {
+			workAreaCrimes = pointsWithinRadius(data, workLoc, workR);
+			radChanged(pointsWithinRadius(workAreaCrimes,homeLoc,homeR));
+		}
+	  } //changed
+	});
+
 
 	//type filtering globals?
 

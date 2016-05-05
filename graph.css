@@ -76,6 +76,11 @@ image {
 
   #homeRad #workRad {
     pointer-events:none;
+    z-index:-1;
+  }
+
+  #homeLoc #workLoc {
+    z-index:2;
   }
 
   .clocklab {
